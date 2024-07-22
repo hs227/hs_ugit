@@ -1,0 +1,16 @@
+from:https://www.leshenko.net/p/ugit/#
+from:Nikita
+Introducing: μgit?
+μgit (ugit) is a small implementation of a Git-like version control system (VCS).
+doesn't compress objects.
+doesn't save the mode of the files.
+doesn't save the time of a commit.
+
+
+Why not learn Git by reading the real Git code?
+'Git SourceCode' deals with a lot of edge cases that we don't care about for learning.
+In this tutorial we will focus on the bare minimum to get the point across.
+
+
+
+

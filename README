@@ -1,0 +1,27 @@
+*本项目作为ugit(原:python)的C++版本
+*基于项目：https://www.leshenko.net/p/ugit/#
+*书籍资料：Pro Git
+*尝试一对一创建每个对应的commit,并可能在此基础上增加额外内容。
+*文件结构：
+  'ideas/':保存一定思路
+  'src/':保存代码
+
+
+*This project is the CPP version of ugit(ori:python).
+*Based on project:https://www.leshenko.net/p/ugit/#
+*book reference:Pro Git
+*Try to make each corresponding commit one-to-one,and 
+possibly add extra content on top of that
+*file structure：
+  'ideas/':ideas of implementation here
+  'src/':code here
+
+
+
+
+
+
+
+
+
+
