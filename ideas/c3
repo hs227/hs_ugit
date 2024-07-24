@@ -1,0 +1,15 @@
+init: Create new .ugit directory
+from:https://www.leshenko.net/p/ugit/#init-create-ugit-dir
+
+from:Nikita
+why 'data/'?
+{
+I want to have some separation between different logical parts of the code:
+
+cli.py - In charge of parsing and processing user input.
+data.py - Manages the data in .ugit directory. Here will be the code that actually touches files on disk.
+}
+
+from:leaving_knife
+about "LAB_GIT_DIR=CUR_DIR+GIT_DIR" in data.h?
+just for run and test

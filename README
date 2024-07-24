@@ -6,6 +6,7 @@
   'ideas/':保存一定思路
   'src/':保存代码
   'tests/':保存其他代码,不必要
+  'lab_space/':用于ugit的测试和运行
 
 
 *This project is the CPP version of ugit(ori:python).
@@ -17,7 +18,7 @@ possibly add extra content on top of that
   'ideas/':ideas of implementation here
   'src/':code here
   'tests/':other code,don't care
-
+  'lab_space/':for ugit run and test
 
 
 

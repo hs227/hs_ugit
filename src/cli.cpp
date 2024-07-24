@@ -1,5 +1,6 @@
 #include"include/CLI11.hpp"
 #include<stdio.h>
+#include"data.h"
 
 int parse_args(int argc, char *argv[]);
 
@@ -26,5 +27,7 @@ int parse_args(int argc, char *argv[])
 
 void init(const std::string& args)
 {
-  printf("Hello, World!\n");
+  //printf("Hello, World!\n");
+  DATA::init();
+  print(f 'Initialized empty ugit repository in {os.getcwd()}/{data.GIT_DIR}')
 }
