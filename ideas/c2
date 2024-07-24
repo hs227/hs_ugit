@@ -1,0 +1,29 @@
+cli:Add argument parser
+from:https://www.leshenko.net/p/ugit/#cli-argparse
+
+from:通义千问2.5
+C++的argparse开发库?
+{
+  在C++中，有几个流行的库可以用来解析命令行参数，类似于Python中的argparse库。这些库提供了不同的功能和易用性，以下是其中几个较为知名的选择：
+  1.CLI11
+  CLI11是一个轻量级、快速且易于使用的库，用于解析命令行参数。它支持各种参数类型和复杂的子命令结构。CLI11的语法简洁，可以快速上手。
+  2.boost::program_options
+  Boost库的一部分，提供了强大的命令行、配置文件和环境变量解析功能。它支持复杂的选项，包括可选和必填参数，以及子命令。
+  3.argparse
+  这个库的名字与Python的argparse相同，但它是一个独立的C++库。它提供了一个简单的API来定义和解析命令行参数。
+
+  选择哪个库取决于你的具体需求，例如库的大小、速度、功能集以及你对库的熟悉程度。CLI11因其简洁性和易用性而受到欢迎，而Boost库则以其成熟和广泛的社区支持著称。
+}
+
+from:leaving_knife
+选择C++的什么argparse库?
+CLI11:https://github.com/CLIUtils/CLI11
+其支持像 git 命令那样的子命令。
+
+
+
+
+
+
+
+

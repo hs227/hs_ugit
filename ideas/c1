@@ -1,10 +1,11 @@
+ugit: DIY Git in Python
 from:https://www.leshenko.net/p/ugit/#
 from:Nikita
 Introducing: μgit?
 μgit (ugit) is a small implementation of a Git-like version control system (VCS).
-doesn't compress objects.
-doesn't save the mode of the files.
-doesn't save the time of a commit.
+!!doesn't compress objects.
+!!doesn't save the mode of the files.
+!!doesn't save the time of a commit.
 
 
 Why not learn Git by reading the real Git code?

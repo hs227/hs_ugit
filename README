@@ -5,6 +5,7 @@
 *文件结构：
   'ideas/':保存一定思路
   'src/':保存代码
+  'tests/':保存其他代码,不必要
 
 
 *This project is the CPP version of ugit(ori:python).
@@ -15,6 +16,7 @@ possibly add extra content on top of that
 *file structure：
   'ideas/':ideas of implementation here
   'src/':code here
+  'tests/':other code,don't care
 
 
 
