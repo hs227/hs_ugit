@@ -1,0 +1,15 @@
+write-tree: List files
+from:https://www.leshenko.net/p/ugit/#write-tree-list-files
+
+from:Nikita
+take the current working directory and store it to the object database.
+In Git's lingo a "tree" means a directory.
+process:
+  write-tree in cli
+  write-tree in base
+  write-tree to print a directory recursively
+
+
+
+from:leaving_knife
+in c8,we just print ,not create tree object yet.
