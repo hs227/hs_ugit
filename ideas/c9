@@ -1,0 +1,6 @@
+write-tree: Ignore .ugit files
+from:https://www.leshenko.net/p/ugit/#write-tree-ignore-ugit
+
+ignore the .ugit files (now not support .gitignore)
+
+

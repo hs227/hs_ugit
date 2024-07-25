@@ -68,5 +68,5 @@ void cat_file(const std::string & args)
 
 void write_tree()
 {
-  BASE::write_tree();
+  BASE::write_tree(DATA::CUR_DIR+"/");
 }

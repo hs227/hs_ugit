@@ -19,14 +19,25 @@ inline static void file_print(void* entry_)
     std::cout << "Directory: " << entry->path() << std::endl;
   }
 }
+inline static bool is_ignore(void*entry_)
+{
+  std::filesystem::directory_entry *entry = (std::filesystem::directory_entry *)entry_;
+  // filter the .ugit
+  if (entry->path().filename() == ".ugit")
+    return true;
+  // TODO support the .ugitignore
+  return false;
+}
 // dir iter
-inline static void iter_files(const std::string &path, void func(void *) = file_print)
+inline static void iter_files(const std::string &path, void func(void *) = file_print,bool filter(void*)=is_ignore)
 {
   for (const auto &entry : std::filesystem::directory_iterator(path)){
+    if(filter((void*)&entry))
+      continue;
     func((void*)&entry);
     if(entry.is_directory()){
       // 递归遍历
-      iter_files(entry.path().string(),func);
+      iter_files(entry.path().string(),func,filter);
     }
   }
 }
