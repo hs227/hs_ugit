@@ -4,6 +4,7 @@
 #include<fstream>
 
 #include"sha.h"
+#include"base.h"
 
 namespace DATA{
 
