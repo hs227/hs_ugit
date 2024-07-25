@@ -60,6 +60,6 @@ void hash_object(const std::string &args)
 void cat_file(const std::string & args)
 {
   std::string oid=args;
-  std::string res=DATA::cat_file(oid);
+  std::string res=DATA::cat_file(oid,"");
   std::cout<<(res.empty()?"cat_file failed":res)<<std::endl;
 }

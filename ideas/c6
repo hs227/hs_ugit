@@ -1,0 +1,18 @@
+data: Add types to objects
+from:https://www.leshenko.net/p/ugit/#add-object-type
+
+from:Nikita
+different logical types of objects{'blob','tree','commit','tag'}
+
+object={type_tag+'\x00'+content}
+
+
+from:leaving_knife
+type_tag直接以字符串形式存储。
+fix c4:{
+修改了c4中hash-object错误的SHA1值：filename的SHA1->file_content的SHA1
+}
+
+
+
+
