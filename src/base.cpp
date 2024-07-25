@@ -8,17 +8,26 @@
 inline static void file_print(void* entry_)
 {
   std::filesystem::directory_entry *entry = (std::filesystem::directory_entry*)entry_;
-  if (entry->is_regular_file())
-  {
+  if (entry->is_regular_file()){
     // 普通文件
     std::cout << "File: " << entry->path() << std::endl;
-  }
-  else
-  {
+  }else{
     // 目录
     std::cout << "Directory: " << entry->path() << std::endl;
   }
 }
+inline static void file_hash(void* entry_)
+{
+  std::filesystem::directory_entry *entry = (std::filesystem::directory_entry *)entry_;
+  if (entry->is_regular_file()){
+    // 普通文件
+    DATA::hash_object(entry->path().string());
+  }else{
+    // 目录
+
+  }
+}
+
 inline static bool is_ignore(void*entry_)
 {
   std::filesystem::directory_entry *entry = (std::filesystem::directory_entry *)entry_;
@@ -48,7 +57,7 @@ namespace BASE
   void write_tree(std::string directory)
   {
     // 遍历目录
-    iter_files(directory);
+    iter_files(directory,file_hash);
 
     // TODO actually create the tree object
   }
