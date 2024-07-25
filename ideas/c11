@@ -1,0 +1,22 @@
+write-tree: Write tree objects
+from:https://www.leshenko.net/p/ugit/#write-tree-create-tree-obj
+
+
+from:Nikita
+directory is a tree_object too.
+tree={type_tag+"\x00"+
+  entries_content}
+entry_content={type_tag+" "+oid+" "+filename+"\n"}
+
+
+from:leaving_knife
+fix c4:{
+   重新修正hash-object,分类处理'blob'/'tree'等object。
+   因为我认为按照分层来说，cli不应该能够直接处理底层文件操作。
+}
+将*.cpp中繁琐的或过时的部分放置到*_other.h中，
+使*.cpp尽量像ugit中一样简洁。
+
+
+
+

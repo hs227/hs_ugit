@@ -5,8 +5,12 @@
 
 #include"sha.h"
 #include"base.h"
+#include"data_other.h"
 
-namespace DATA{
+
+
+namespace DATA
+{
 
   std::map<std::string, obj_type> type_map = {{"blob", obj_type::blob}};
 
@@ -35,33 +39,20 @@ namespace DATA{
     }
   }
 
-  std::string hash_object(const std::string &file,const std::string type)
+  std::string hash_object(const std::string &data_,const std::string type)
   {
-    std::filesystem::path filename = CUR_DIR+"/"+file;
-
-    // 获得文件内容
-    // 二进制打开|指针指向文件末尾
-    std::ifstream in(filename, std::ios::binary | std::ios::ate);
-    if (!in.is_open())
-    {
-      std::cout << "hash_object:in stream failed" << std::endl;
-      return "";
+    std::string data;
+    if(type=="blob"){
+      data=hash_blob_obj(data_);
+    }else if(type=="tree"){
+      data=hash_tree_obj(data_);
     }
-    size_t len = in.tellg();    // 文件总大小
-    in.seekg(0, std::ios::beg); // 指针指向文件开头
-    std::string content;
-    content.resize(len);
-    in.read(content.data(), len);
-    in.close();
-    std::string buf; //object 
-    buf = type + '\x00' + content;
-
 
     // SHA1作为object的文件名
-    std::string oid = SHA::hash_str(buf);
+    std::string oid = SHA::hash_str(data);
     if (oid.empty())
     {
-      std::cout << "hash_object:hash { \"" << filename << "\" failed" << std::endl;
+      std::cout << "hash_object:hash failed ["<<type<<"]" << std::endl;
       return "";
     }
     std::filesystem::path res_path = OBJECTS_DIR + "/" + oid;
@@ -73,7 +64,7 @@ namespace DATA{
       std::cout<<"hash_object:out stream failed"<<std::endl;
       return "";
     }
-    out.write(buf.data(),buf.size());
+    out.write(data.data(),data.size());
     out.close();
 
     return oid;
@@ -109,5 +100,4 @@ namespace DATA{
 
     return content;
   }
-
 }

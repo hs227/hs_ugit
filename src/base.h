@@ -6,7 +6,7 @@
 
 namespace BASE
 {
-  void write_tree(std::string directory=".");
+  std::string write_tree(std::string directory=".");
 
 }
 

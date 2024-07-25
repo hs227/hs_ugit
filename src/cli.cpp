@@ -68,5 +68,6 @@ void cat_file(const std::string & args)
 
 void write_tree()
 {
-  BASE::write_tree(DATA::CUR_DIR+"/");
+  std::string oid=BASE::write_tree(DATA::CUR_DIR+"/");
+  printf("tree %s\n",oid.c_str());
 }
