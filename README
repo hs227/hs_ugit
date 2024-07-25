@@ -2,6 +2,7 @@
 *基于项目：https://www.leshenko.net/p/ugit/#
 *书籍资料：Pro Git
 *尝试一对一创建每个对应的commit,并可能在此基础上增加额外内容。
+*每个commit可能存在bug在随后的commit中fixed，不够严谨，本项目应作为原项目的参考内容。
 *文件结构：
   'ideas/':保存一定思路
   'src/':保存代码
@@ -14,6 +15,9 @@
 *book reference:Pro Git
 *Try to make each corresponding commit one-to-one,and 
 possibly add extra content on top of that
+*There may be bugs in each commit, which is fixed in the subsequent commit, 
+which is not rigorous enough, 
+and this project should be used as a reference for the original project
 *file structure：
   'ideas/':ideas of implementation here
   'src/':code here

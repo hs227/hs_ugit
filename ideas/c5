@@ -1,0 +1,13 @@
+cat-file: Print hashed objects
+from:https://www.leshenko.net/p/ugit/#cat-file
+
+from:Nikita
+cat-file:print an object by its OID.
+the object database is just about storing bytes for later retrieval and it doesn't care which filename the bytes came from.
+
+from:leaving_knife
+fix c4:
+修改了c4中的内容，使c4更贴近N's的ugit：
+  调节了hash-object中printf的层级:data->cli
+修改了hash-object的路径bug  
+

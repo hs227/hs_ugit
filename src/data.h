@@ -13,8 +13,8 @@ const std::string LAB_GIT_DIR=CUR_DIR+GIT_DIR;
 const std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
 
 void init();
-void hash_object(const std::string& filename);
-
+std::string hash_object(const std::string&);
+std::string cat_file(const std::string&);
 }
 
 #endif

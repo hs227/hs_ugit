@@ -6,6 +6,7 @@ int parse_args(int argc, char *argv[]);
 
 void init();
 void hash_object(const std::string&);
+void cat_file(const std::string&);
 
 int main(int argc,char* argv[]){
   return parse_args(argc,argv);
@@ -32,6 +33,13 @@ int parse_args(int argc, char *argv[])
     hash_object(input_file);
   });
 
+  // git cat-file
+  CLI::App* sc_cat_file=app.add_subcommand("cat-file","print file content");
+  sc_cat_file->add_option("object",input_file,"oid need")->required();
+  sc_cat_file->callback([&](){
+    cat_file(input_file);
+  });
+
   CLI11_PARSE(app,argc,argv);
 
   return 0;
@@ -44,6 +52,14 @@ void init()
 
 void hash_object(const std::string &args)
 {
-  std::string file=args;
-  DATA::hash_object(file);
+  std::string file= args;
+  std::string oid = DATA::hash_object(file);
+  std::cout << "hash-object finished: " << oid << std::endl;
+}
+
+void cat_file(const std::string & args)
+{
+  std::string oid=args;
+  std::string res=DATA::cat_file(oid);
+  std::cout<<(res.empty()?"cat_file failed":res)<<std::endl;
 }

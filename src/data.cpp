@@ -37,13 +37,14 @@ void init()
 
 }
 
-void hash_object(const std::string& filename)
+std::string hash_object(const std::string &file)
 {
+  std::filesystem::path filename = CUR_DIR+"/"+file;
   // SHA1作为object的文件名
-  std::string oid=SHA::hash_file(filename);
+  std::string oid=SHA::hash_file(filename.string());
   if(oid.empty()){
     std::cout<<"hash_object:hash { \""<<filename<<"\" failed"<<std::endl;
-    return;
+    return "";
   }
 
   // 创建object文件(binary)
@@ -52,12 +53,12 @@ void hash_object(const std::string& filename)
   std::ifstream in(filename,std::ios::binary|std::ios::ate);
   if(!in.is_open()){
     std::cout << "hash_object:in stream failed" << std::endl;
-    return;
+    return "";
   }
   std::ofstream out(res_path,std::ios::binary);
   if(!out.is_open()){
     std::cout<<"hash_object:out stream failed"<<std::endl;
-    return;
+    return "";
   }
   
   size_t len = in.tellg();    // 文件总大小
@@ -71,10 +72,28 @@ void hash_object(const std::string& filename)
   in.close();
   out.close();
 
-  std::cout<<"hash-object finished: "<<oid<<std::endl;
-  return;
+  
+  return oid;
 }
 
+std::string cat_file(const std::string & oid)
+{
+  std::filesystem::path filename=OBJECTS_DIR+"/"+oid;
 
+  if(!std::filesystem::exists(filename)){
+    return "";
+  }
+  std::ifstream in(filename,std::ios::binary);
+  if(!in.is_open()){
+    return "";
+  }
+
+  std::string res;
+  in>>res;
+
+  in.close();
+
+  return res;
+}
 
 }
