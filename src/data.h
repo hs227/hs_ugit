@@ -10,8 +10,10 @@ namespace DATA{
 const std::string CUR_DIR="../lab_space/";// for this project 
 const std::string GIT_DIR = ".ugit";
 const std::string LAB_GIT_DIR=CUR_DIR+GIT_DIR;
+const std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
 
 void init();
+void hash_object(const std::string& filename);
 
 }
 

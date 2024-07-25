@@ -1,0 +1,43 @@
+hash-object: Save object
+from:https://www.leshenko.net/p/ugit/#hash-object
+
+from:Nikita
+Why object database?
+In Git's lingo, this feature is called "the object database".
+It allows us to store and retrieve arbitrary blobs, which are called "objects".
+!!We can refer to the object using its hash.
+In summary, a hash function can take a blob of arbitrary length and produce a small "fingerprint" with a fixed length.
+!!We're going to use the hash as the name of object (we'll call this name an "OID"* - object ID).
+!!So the flow of the command hash-object is:{
+1.Get the path of the file to store.
+2.Read the file.
+3.Hash the content of the file using SHA-1.
+4.Store the file under ".ugit/objects/{the SHA-1 hash}".
+}
+This type of storage is called content-addressable storage because the "address" that we use to find a blob is based on the content of the blob itself.
+When real Git stores objects it does a few extra things, such as writing the size of the object to the file as well, compressing them and dividing the objects into 256 directories. This is done to avoid having directories with huge number of files, which can hurt performance. We're not going to do this in ugit for simplicity.
+
+
+
+from:通义千问2.5
+C++中的SHA1开发库？
+{
+Boost:
+Boost 库是一个非常流行的 C++ 库集合，它包含了许多有用的组件，包括用于哈希的库。Boost.Asio 提供了一个加密服务，其中包括 SHA-1。
+OpenSSL:
+OpenSSL 是一个广泛使用的加密库，支持多种加密算法，包括 SHA-1。
+Crypto++:
+Crypto++ 是一个免费的 C++ 加密库，支持多种加密算法，包括 SHA-1。
+Botan:
+Botan 是一个高性能的 C++ 加密库，支持广泛的加密算法。
+Poco Cryptography:
+Poco 是一个跨平台的 C++ 库集合，它也包含了一个加密组件，支持 SHA-1。
+}
+
+from:leaving_knife
+选择https://github.com/clibs/sha1的CPP版本
+https://github.com/vog/sha1作为SHA1支持，简洁不臃肿。
+在ugit中objects不采用多级目录，为了简洁。
+
+
+
