@@ -175,8 +175,7 @@ namespace BASE
 
   void create_tag(const std::string & name, const std::string & oid)
   {
-    // TODO Actually create the tag
-    printf("create_tag here\n");
+    DATA::update_ref(name,oid);
   }
 
 }

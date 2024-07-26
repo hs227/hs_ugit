@@ -151,6 +151,10 @@ void checkout(const std::string &args)
 void tag(const std::string & arg_name, const std::string & arg_oid)
 {
   std::string oid=arg_oid!=""?arg_oid:DATA::get_ref("HEAD");
+  if(arg_name.find('/')!=std::string::npos){
+    std::cout<<"tag`s name cant contain the '/'.["<<arg_name<<"]\n";
+    return;
+  }
   BASE::create_tag(arg_name,oid);
 }
 

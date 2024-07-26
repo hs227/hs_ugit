@@ -45,6 +45,9 @@ namespace DATA
   void update_ref(const std::string& ref,const std::string& oid)
   {
     std::string path=(ref=="HEAD")?HEAD_PATH:REFERENCE_DIR+"/"+ref;
+    
+    std::filesystem::create_directories(std::filesystem::path(path).parent_path());
+    
     std::ofstream out(path,std::ios::binary);
     if(!out.is_open()){
       std::cout<<"update_ref: outfile open failed\n";
