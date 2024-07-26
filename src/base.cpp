@@ -27,6 +27,27 @@ namespace BASE
     return oid;
   }
 
+  void empty_current_directory(const std::string& path=DATA::CUR_DIR)
+  {
+    for(const auto& entry:std::filesystem::directory_iterator(path)){
+      if(is_ignore((void*)&entry))
+        continue;
+      
+      if(entry.is_regular_file()){
+        // file
+        std::filesystem::remove(entry.path());
+      }else{
+        // dir
+        empty_current_directory(entry.path().string());
+        if (std::filesystem::is_empty(entry.path().string())){
+          std::filesystem::remove(entry.path().string());
+        }
+      }
+    }
+  }
+
+
+
   void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree)
   {
     std::string content = DATA::get_object(tree, "tree");
@@ -72,6 +93,8 @@ namespace BASE
 
   void read_tree(const std::string &oid)
   {
+    empty_current_directory();
+
     std::set<gt_iter_node> entries;
     get_tree(entries, oid); // get all blob in tree
     std::string cur_path = DATA::CUR_DIR;

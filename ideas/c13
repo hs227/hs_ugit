@@ -1,0 +1,6 @@
+read-tree: Delete all existing stuff before reading
+from:https://www.leshenko.net/p/ugit/#read-tree-cleanup
+
+
+from:leaving_knife
+delete all the files and dirs,except the ignore_files
