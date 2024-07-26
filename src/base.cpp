@@ -181,8 +181,9 @@ namespace BASE
   // out:oid
   std::string get_oid(const std::string& name)
   {
-    std::string might_oid=DATA::get_ref(name);
-    if(might_oid==""){
+    std::string might_oid = get_ref_path(name);
+    if (might_oid == "")
+    {
       // name is oid
       return name;
     }

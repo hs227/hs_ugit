@@ -5,7 +5,7 @@
 
 int parse_args(int argc, char *argv[]);
 // argument modify
-void modifier_name(std::string&);
+void modifier_name(std::string&,std::string="HEAD");
 // subcommand
 void init();
 void hash_object(const std::string &);
@@ -32,24 +32,26 @@ int parse_args(int argc, char *argv[])
   // those std::strings` name are meaningless now
   std::string input_file;// actually argu1
   std::string output_file;// actually argu2
+  int option_parsed_count=0;
 
   // git init
   CLI::App *sc_init = app.add_subcommand("init", "ugit_cpp init");
-  sc_init->callback([&]()
-                    { init(); });
+  sc_init->callback([&](){ 
+    init(); });
 
   // git hash-object
   CLI::App *sc_hash_object = app.add_subcommand("hash-object", "hash-object a file");
   sc_hash_object->add_option("file", input_file, "file input")
       ->required();
-  sc_hash_object->callback([&]()
-                           { hash_object(input_file); });
+  sc_hash_object->callback([&](){ 
+    hash_object(input_file); });
 
   // git cat-file
   CLI::App *sc_cat_file = app.add_subcommand("cat-file", "print file content");
-  sc_cat_file->add_option("object", input_file, "oid need")->required();
+  sc_cat_file->add_option("object", input_file, "oid need")
+    ->required();
   sc_cat_file->callback([&](){ 
-    modifier_name(input_file);
+    modifier_name(input_file,"");
     cat_file(input_file); });
 
   // git write-tree
@@ -61,7 +63,7 @@ int parse_args(int argc, char *argv[])
   CLI::App *sc_read_tree = app.add_subcommand("read-tree", "restore the workshop");
   sc_read_tree->add_option("tree", input_file, "tree oid need")->required();
   sc_read_tree->callback([&](){ 
-    modifier_name(input_file);
+    modifier_name(input_file,"");
     read_tree(input_file); });
 
   // git commit
@@ -89,6 +91,7 @@ int parse_args(int argc, char *argv[])
   sc_tag->add_option("name",input_file,"tag name")->required();
   sc_tag->add_option("oid",output_file,"oid");
   sc_tag->callback([&](){ 
+
     modifier_name(output_file);
     tag(input_file,output_file);});
 
@@ -98,11 +101,15 @@ int parse_args(int argc, char *argv[])
   return 0;
 }
 
-void modifier_name(std::string &input)
+void modifier_name(std::string &input, std::string default_)
 { 
   // oid/ref ->oid
-  if(input=="")
-    return;
+  if(input==""){
+    if(default_=="")
+      return;
+    input=default_;
+  }
+
   std::string res=BASE::get_oid(input);
   input=res;
 }
@@ -146,7 +153,8 @@ void commit(const std::string &args)
 
 void log(const std::string &args)
 {
-  std::string oid = args != "" ? args : DATA::get_ref("HEAD");
+//  std::string oid = args != "" ? args : BASE::get_oid("HEAD");
+  std::string oid=args;
   while (oid != "")
   {
     BASE::commit_cxt cxt = BASE::get_commit(oid);
@@ -169,7 +177,9 @@ void checkout(const std::string &args)
 
 void tag(const std::string & arg_name, const std::string & arg_oid)
 {
-  std::string oid=arg_oid!=""?arg_oid:DATA::get_ref("HEAD");
+  //std::string oid=arg_oid!=""?arg_oid:BASE::get_oid("HEAD");
+  std::string oid=arg_oid;
+
   if(arg_name.find('/')!=std::string::npos){
     std::cout<<"tag`s name cant contain the '/'.["<<arg_name<<"]\n";
     return;

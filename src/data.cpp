@@ -44,7 +44,11 @@ namespace DATA
   // side:set the ref(HEAD or tags) 
   void update_ref(const std::string& ref,const std::string& oid)
   {
-    std::string path=(ref=="HEAD")?HEAD_PATH:REFERENCE_DIR+"/"+ref;
+    std::string path=get_ref(ref);
+    if(path==""){
+      std::cout<<"update_ref path failed. \n";
+      return;
+    }
     
     std::filesystem::create_directories(std::filesystem::path(path).parent_path());
     
@@ -63,7 +67,7 @@ namespace DATA
   // out:oid
   std::string get_ref(const std::string& ref)
   {
-    std::string path = (ref == "HEAD") ? HEAD_PATH : REFERENCE_DIR + "/" + ref;
+    std::string path = ref;
 
     if(!std::filesystem::exists(path)){
       return "";

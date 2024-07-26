@@ -1,0 +1,13 @@
+base: Try different directories when searching for a ref
+from: https://www.leshenko.net/p/ugit/#search-ref-directories
+
+from:Nikita
+allow different ref_path to be written
+ways:
+  1:Root (.ugit): This way we can specify refs/tags/mytag
+  2:.ugit/refs: This way we can specify tags/mytag
+  3:.ugit/refs/tags: This way we can specify mytag
+  4:.ugit/refs/heads: This will be needed for a future change
+
+
+

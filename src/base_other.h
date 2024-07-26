@@ -199,8 +199,23 @@ static inline std::string write_tree_compact(const std::string &path)
   return res_oid;
 }
 
+// get the ref name
+inline static std::string get_ref_path(const std::string &name)
+{
+  std::vector<std::string> refs_to_try;
+  refs_to_try.push_back(DATA::LAB_GIT_DIR + "/" + name);
+  refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/" + name);
+  refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/tags/" + name);
+  refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/heads/" + name);
 
-
-
+  for (const auto &str : refs_to_try)
+  {
+    std::string res = DATA::get_ref(str);
+    if (res != "")
+      return res;
+  }
+  // failed
+  return "";
+}
 
 #endif
