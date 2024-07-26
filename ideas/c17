@@ -1,0 +1,13 @@
+log: Implement
+from: https://www.leshenko.net/p/ugit/#log
+
+
+from:Nikita
+log will walk the list of commits and print them.
+start from the HEAD commit and walk its parents until we reach a commit without a parent.
+
+from:leaving_knife
+fix:data.cpp中get_object的split:' '->'\n'
+
+
+

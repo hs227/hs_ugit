@@ -11,6 +11,7 @@ void cat_file(const std::string&);
 void write_tree();
 void read_tree(const std::string&);
 void commit(const std::string&);
+void log();
 
 int main(int argc,char* argv[]){
   return parse_args(argc,argv);
@@ -54,6 +55,9 @@ int parse_args(int argc, char *argv[])
   sc_commit->add_option("-m,--message",input_file,"commit need a message");
   sc_commit->callback([&](){ commit(input_file);});
 
+  // git log
+  CLI::App* sc_log=app.add_subcommand("log","walk commit tree");
+  sc_log->callback([&](){log();});
 
   CLI11_PARSE(app,argc,argv);
 
@@ -95,4 +99,20 @@ void commit(const std::string & args)
 {
   std::string msg=args;
   std::cout<<BASE::commit(msg)<<std::endl;
+}
+
+void log()
+{
+  std::string oid=DATA::get_HEAD();
+  while(oid!=""){
+    BASE::commit_cxt cxt=BASE::get_commit(oid);
+    std::cout<<"commit "<<oid<<"\n";
+    std::cout<<"tree "<<cxt.tree<<"\n";
+    if(cxt.parent!="")
+      std::cout<<"parent "<<cxt.parent<<"\n";
+    std::cout<<"  "<<cxt.msg<<"\n";
+    std::cout<<std::endl;
+
+    oid=cxt.parent;
+  }
 }

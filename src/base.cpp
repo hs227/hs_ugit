@@ -134,4 +134,33 @@ namespace BASE
     DATA::set_HEAD(oid);
     return oid;
   }
+
+  commit_cxt get_commit(const std::string &oid)
+  {
+    std::string commit_data=DATA::get_object(oid,"commit");
+    commit_cxt res;
+    if(commit_data=="")
+      return commit_cxt();
+    std::stringstream ss(commit_data);
+    std::string tag;
+    while(ss){
+      ss>>tag;
+      if(tag=="tree"){
+        ss>>res.tree;
+      }else if(tag=="parent"){
+        ss>>res.parent;
+      }else if(tag==""){
+        ss>>res.msg;
+        break;
+      }else{
+        std::cout<<"get_commit ss failed\n";
+        return commit_cxt();
+      }
+    }
+    return res;
+  }
+
+
+
+
 }

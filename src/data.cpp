@@ -129,7 +129,7 @@ namespace DATA
     //解析提取文件
     std::string type;
     std::string content;
-    size_t split_pos=buf.find(' ');
+    size_t split_pos=buf.find('\n');
     type=buf.substr(0,split_pos);
     content=buf.substr(split_pos+1);
 
