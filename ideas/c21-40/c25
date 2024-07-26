@@ -1,0 +1,5 @@
+cli: pass HEAD by default in argparse
+from:https://www.leshenko.net/p/ugit/#make-head-default
+
+from leaving_knife
+already support in c24 'cli.cpp::modifier_name' by the 'default_="HEAD"'
