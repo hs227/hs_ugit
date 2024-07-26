@@ -127,7 +127,7 @@ void commit(const std::string &args)
 
 void log(const std::string &args)
 {
-  std::string oid = args != "" ? args : DATA::get_HEAD();
+  std::string oid = args != "" ? args : DATA::get_ref("HEAD");
   while (oid != "")
   {
     BASE::commit_cxt cxt = BASE::get_commit(oid);
@@ -150,7 +150,7 @@ void checkout(const std::string &args)
 
 void tag(const std::string & arg_name, const std::string & arg_oid)
 {
-  std::string oid=arg_oid!=""?arg_oid:DATA::get_HEAD();
+  std::string oid=arg_oid!=""?arg_oid:DATA::get_ref("HEAD");
   BASE::create_tag(arg_name,oid);
 }
 

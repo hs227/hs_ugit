@@ -39,11 +39,15 @@ namespace DATA
     }
   }
 
-  void set_HEAD(const std::string &oid){
-    const std::string& path = HEAD_PATH;
+  // create the reference
+  // in:ref_name,oid
+  // side:set the ref(HEAD or tags) 
+  void update_ref(const std::string& ref,const std::string& oid)
+  {
+    std::string path=(ref=="HEAD")?HEAD_PATH:REFERENCE_DIR+"/"+ref;
     std::ofstream out(path,std::ios::binary);
     if(!out.is_open()){
-      std::cout<<"set_HEAD: HEAD open failed\n";
+      std::cout<<"update_ref: outfile open failed\n";
       return;
     }
 
@@ -51,28 +55,31 @@ namespace DATA
     out.close();
     return;
   }
-
-  std::string get_HEAD()
+  // ref->oid
+  // in: ref
+  // out:oid
+  std::string get_ref(const std::string& ref)
   {
-    const std::string& path=HEAD_PATH;
+    std::string path = (ref == "HEAD") ? HEAD_PATH : REFERENCE_DIR + "/" + ref;
 
     if(!std::filesystem::exists(path)){
       return "";
     }
-    // HEAD 存在
-    std::ifstream in(path, std::ios::binary);
-    if (!in.is_open())
-    {
-      std::cout << "get_HEAD failed\n";
+    // ref 存在
+    std::ifstream in(path,std::ios::binary);
+    if(!in.is_open()){
+      std::cout<<"get_ref failed\n";
       return "";
     }
-
     std::string data;
-    in >> data;
+    in>>data;
     in.close();
     return data;
   }
 
+
+  // in:content,type
+  // out:oid
   std::string hash_object(const std::string &data_, const std::string type)
   {
     std::string data;
@@ -105,7 +112,8 @@ namespace DATA
 
     return oid;
   }
-
+  // in: oid,type
+  // out: object_content
   std::string get_object(const std::string &oid, const std::string expected)
   {
     std::filesystem::path filename=OBJECTS_DIR+"/"+oid;

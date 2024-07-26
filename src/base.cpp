@@ -127,14 +127,14 @@ namespace BASE
   {
     std::string commit_data = "tree " + write_tree(DATA::CUR_DIR + "/") + "\n";
     // parent commit
-    std::string HEAD = DATA::get_HEAD();
+    std::string HEAD = DATA::get_ref("HEAD");
     if (HEAD != "")
       commit_data += "parent " + HEAD + "\n";
 
     commit_data += "\n";
     commit_data += msg + "\n";
     std::string oid = DATA::hash_object(commit_data, "commit");
-    DATA::set_HEAD(oid);
+    DATA::update_ref("HEAD",oid);
     return oid;
   }
 
@@ -170,7 +170,7 @@ namespace BASE
     read_tree(tree_oid);
 
     // set HEAD
-    DATA::set_HEAD(commit_oid);
+    DATA::update_ref("HEAD",commit_oid);
   }
 
   void create_tag(const std::string & name, const std::string & oid)

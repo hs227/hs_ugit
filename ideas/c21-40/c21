@@ -1,0 +1,12 @@
+tag: Generalize HEAD to refs
+from:https://www.leshenko.net/p/ugit/#generic-refs
+
+from: Nikita
+HEAD and tags are similar.->Reference
+Logically, a ref is a named pointer to an object.
+
+
+
+
+
+
