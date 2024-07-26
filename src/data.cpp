@@ -40,16 +40,37 @@ namespace DATA
   }
 
   void set_HEAD(const std::string &oid){
-      std::string path = LAB_GIT_DIR+"/"+"HEAD";
-      std::ofstream out(path,std::ios::binary);
-      if(!out.is_open()){
-        std::cout<<"set_HEAD: HEAD open failed\n";
-        return;
-      }
-
-      out.write(oid.data(),oid.size());
-      out.close();
+    const std::string& path = HEAD_PATH;
+    std::ofstream out(path,std::ios::binary);
+    if(!out.is_open()){
+      std::cout<<"set_HEAD: HEAD open failed\n";
       return;
+    }
+
+    out.write(oid.data(),oid.size());
+    out.close();
+    return;
+  }
+
+  std::string get_HEAD()
+  {
+    const std::string& path=HEAD_PATH;
+
+    if(!std::filesystem::exists(path)){
+      return "";
+    }
+    // HEAD 存在
+    std::ifstream in(path, std::ios::binary);
+    if (!in.is_open())
+    {
+      std::cout << "get_HEAD failed\n";
+      return "";
+    }
+
+    std::string data;
+    in >> data;
+    in.close();
+    return data;
   }
 
   std::string hash_object(const std::string &data_, const std::string type)

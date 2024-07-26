@@ -1,0 +1,10 @@
+commit: set parent to HEAD
+from:https://www.leshenko.net/p/ugit/#commit-write-parent
+
+
+from: Nikita
+We'll call the previous commit the "parent commit" and we will save its OID in the "parent" key on the commit object.
+
+
+
+
