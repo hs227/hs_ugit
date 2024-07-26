@@ -1,0 +1,8 @@
+log: Add oid parameter
+from:https://www.leshenko.net/p/ugit/#log-start-from-oid
+
+
+from:leaving_knife
+fix:
+  fix the mistake in 'cli.cpp':some subcmd`s argument forget to set "->required()";
+
