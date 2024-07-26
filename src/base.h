@@ -22,6 +22,7 @@ namespace BASE
   void read_tree(const std::string& );
   std::string commit(const std::string&);
   commit_cxt get_commit(const std::string&);
+  void checkout(const std::string&);
 }
 
 #endif

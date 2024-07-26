@@ -1,0 +1,10 @@
+checkout: Read tree and move HEAD
+from:https://www.leshenko.net/p/ugit/#checkout-read-tree
+
+
+from:Nikita
+checkout:set_HEAD+read_tree
+power:
+  1.walk in commit history
+  2.allow the multiple branches of history
+We can suddenly have a branching workflow which might look complicated but it is actually a direct consequence of what we implemented in previous changes.

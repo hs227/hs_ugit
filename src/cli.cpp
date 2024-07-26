@@ -12,6 +12,7 @@ void write_tree();
 void read_tree(const std::string &);
 void commit(const std::string &);
 void log(const std::string &);
+void checkout(const std::string&);
 
 int main(int argc, char *argv[])
 {
@@ -66,6 +67,12 @@ int parse_args(int argc, char *argv[])
   sc_log->add_option("oid", input_file, "specify a oid rather than HEAD");
   sc_log->callback([&]()
                    { log(input_file); });
+
+  // git checkout
+  CLI::App *sc_checkout=app.add_subcommand("checkout","read_tree+set_HEAD");
+  sc_checkout->add_option("oid",input_file,"chose commit")->required();
+  sc_checkout->callback([&](){checkout(input_file);});
+  
 
   CLI11_PARSE(app, argc, argv);
 
@@ -124,4 +131,10 @@ void log(const std::string &args)
 
     oid = cxt.parent;
   }
+}
+
+void checkout(const std::string &args)
+{ 
+  std::string oid=args;
+  BASE::checkout(oid);
 }

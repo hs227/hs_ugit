@@ -27,26 +27,29 @@ namespace BASE
     return oid;
   }
 
-  void empty_current_directory(const std::string& path=DATA::CUR_DIR)
+  void empty_current_directory(const std::string &path = DATA::CUR_DIR)
   {
-    for(const auto& entry:std::filesystem::directory_iterator(path)){
-      if(is_ignore((void*)&entry))
+    for (const auto &entry : std::filesystem::directory_iterator(path))
+    {
+      if (is_ignore((void *)&entry))
         continue;
-      
-      if(entry.is_regular_file()){
+
+      if (entry.is_regular_file())
+      {
         // file
         std::filesystem::remove(entry.path());
-      }else{
+      }
+      else
+      {
         // dir
         empty_current_directory(entry.path().string());
-        if (std::filesystem::is_empty(entry.path().string())){
+        if (std::filesystem::is_empty(entry.path().string()))
+        {
           std::filesystem::remove(entry.path().string());
         }
       }
     }
   }
-
-
 
   void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree)
   {
@@ -120,47 +123,60 @@ namespace BASE
     }
   }
 
-  std::string commit(const std::string & msg)
+  std::string commit(const std::string &msg)
   {
     std::string commit_data = "tree " + write_tree(DATA::CUR_DIR + "/") + "\n";
     // parent commit
-    std::string HEAD=DATA::get_HEAD();
-    if(HEAD!="")
-      commit_data+="parent "+HEAD+"\n";
+    std::string HEAD = DATA::get_HEAD();
+    if (HEAD != "")
+      commit_data += "parent " + HEAD + "\n";
 
-    commit_data+="\n";
-    commit_data+=msg+"\n";
-    std::string oid=DATA::hash_object(commit_data,"commit");
+    commit_data += "\n";
+    commit_data += msg + "\n";
+    std::string oid = DATA::hash_object(commit_data, "commit");
     DATA::set_HEAD(oid);
     return oid;
   }
 
   commit_cxt get_commit(const std::string &oid)
   {
-    std::string commit_data=DATA::get_object(oid,"commit");
+    std::string commit_data = DATA::get_object(oid, "commit");
     commit_cxt res;
-    if(commit_data=="")
+    if (commit_data == "")
       return commit_cxt();
     std::stringstream ss(commit_data);
     std::string tag;
-    while(ss){
-      ss>>tag;
-      if(tag=="tree"){
-        ss>>res.tree;
-      }else if(tag=="parent"){
-        ss>>res.parent;
-      }else if(tag==""){
-        ss>>res.msg;
+    while (ss)
+    {
+      ss >> tag;
+      if (tag == "tree")
+      {
+        ss >> res.tree;
+      }
+      else if (tag == "parent")
+      {
+        ss >> res.parent;
+      }
+      else
+      {
+        res.msg = tag;
         break;
-      }else{
-        std::cout<<"get_commit ss failed\n";
-        return commit_cxt();
       }
     }
     return res;
   }
 
+  void checkout(const std::string &commit_oid)
+  {
+    // restore workshop
+    commit_cxt cxt = get_commit(commit_oid);
+    if (cxt.tree == "")
+      return;
+    std::string &tree_oid = cxt.tree;
+    read_tree(tree_oid);
 
-
+    // set HEAD
+    DATA::set_HEAD(commit_oid);
+  }
 
 }
