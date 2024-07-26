@@ -125,6 +125,8 @@ namespace BASE
     std::string commit_data = "tree " + write_tree(DATA::CUR_DIR + "/") + "\n";
     commit_data+="\n";
     commit_data+=msg+"\n";
-    return DATA::hash_object(commit_data,"commit");
+    std::string oid=DATA::hash_object(commit_data,"commit");
+    DATA::set_HEAD(oid);
+    return oid;
   }
 }

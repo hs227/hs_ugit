@@ -20,7 +20,8 @@ namespace DATA{
 
 
   void init();
-  std::string hash_object(const std::string&,const std::string="blob");
+  void set_HEAD(const std::string &);
+  std::string hash_object(const std::string &, const std::string = "blob");
   std::string get_object(const std::string&,const std::string="blob");
 }
 

@@ -39,7 +39,20 @@ namespace DATA
     }
   }
 
-  std::string hash_object(const std::string &data_,const std::string type)
+  void set_HEAD(const std::string &oid){
+      std::string path = LAB_GIT_DIR+"/"+"HEAD";
+      std::ofstream out(path,std::ios::binary);
+      if(!out.is_open()){
+        std::cout<<"set_HEAD: HEAD open failed\n";
+        return;
+      }
+
+      out.write(oid.data(),oid.size());
+      out.close();
+      return;
+  }
+
+  std::string hash_object(const std::string &data_, const std::string type)
   {
     std::string data;
     if(type=="blob"){

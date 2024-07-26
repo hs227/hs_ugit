@@ -1,0 +1,8 @@
+commit: Record hash of last commit to HEAD
+from:https://www.leshenko.net/p/ugit/#commit-update-head
+
+
+create 'HEAD' to latest commit
+
+
+
