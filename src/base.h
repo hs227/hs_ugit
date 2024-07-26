@@ -23,6 +23,7 @@ namespace BASE
   std::string commit(const std::string&);
   commit_cxt get_commit(const std::string&);
   void checkout(const std::string&);
+  void create_tag(const std::string&,const std::string&);
 }
 
 #endif

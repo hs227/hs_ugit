@@ -146,19 +146,13 @@ namespace BASE
       return commit_cxt();
     std::stringstream ss(commit_data);
     std::string tag;
-    while (ss)
-    {
+    while (ss){
       ss >> tag;
-      if (tag == "tree")
-      {
+      if (tag == "tree"){
         ss >> res.tree;
-      }
-      else if (tag == "parent")
-      {
+      }else if (tag == "parent") {
         ss >> res.parent;
-      }
-      else
-      {
+      }else{
         res.msg = tag;
         break;
       }
@@ -177,6 +171,12 @@ namespace BASE
 
     // set HEAD
     DATA::set_HEAD(commit_oid);
+  }
+
+  void create_tag(const std::string & name, const std::string & oid)
+  {
+    // TODO Actually create the tag
+    printf("create_tag here\n");
   }
 
 }

@@ -13,6 +13,7 @@ void read_tree(const std::string &);
 void commit(const std::string &);
 void log(const std::string &);
 void checkout(const std::string&);
+void tag(const std::string&,const std::string&);
 
 int main(int argc, char *argv[])
 {
@@ -25,7 +26,9 @@ int parse_args(int argc, char *argv[])
 
   app.require_subcommand(1, 1); // only 1 subcommand needed
   // sc_=subcmd_
-  std::string input_file;
+  // those std::strings` name are meaningless now
+  std::string input_file;// actually argu1
+  std::string output_file;// actually argu2
 
   // git init
   CLI::App *sc_init = app.add_subcommand("init", "ugit_cpp init");
@@ -73,6 +76,12 @@ int parse_args(int argc, char *argv[])
   sc_checkout->add_option("oid",input_file,"chose commit")->required();
   sc_checkout->callback([&](){checkout(input_file);});
   
+  // git tag
+  CLI::App *sc_tag=app.add_subcommand("tag","alias of OID");
+  sc_tag->add_option("name",input_file,"tag name")->required();
+  sc_tag->add_option("oid",output_file,"oid");
+  sc_tag->callback([&](){ tag(input_file,output_file);});
+
 
   CLI11_PARSE(app, argc, argv);
 
@@ -138,3 +147,16 @@ void checkout(const std::string &args)
   std::string oid=args;
   BASE::checkout(oid);
 }
+
+void tag(const std::string & arg_name, const std::string & arg_oid)
+{
+  std::string oid=arg_oid!=""?arg_oid:DATA::get_HEAD();
+  BASE::create_tag(arg_name,oid);
+}
+
+
+
+
+
+
+

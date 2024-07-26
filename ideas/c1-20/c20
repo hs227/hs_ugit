@@ -1,0 +1,12 @@
+tag: Implement CLI command
+from:https://www.leshenko.net/p/ugit/#tag-cli-command
+
+
+from Nikita
+attach a name to an OID. Then we'll be able to refer to the OID by that name.
+
+First step is to create a CLI commmand that call the relevant command in the base module. 
+
+
+
+
