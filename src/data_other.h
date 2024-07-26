@@ -27,7 +27,7 @@ inline static std::string hash_blob_obj(const std::string &file)
   in.read(content.data(), len);
   in.close();
   std::string buf; // object
-  buf = "blob" + '\x00' + content;
+  buf = "blob\n" + content;
 
   return buf;
 }
@@ -35,7 +35,7 @@ inline static std::string hash_blob_obj(const std::string &file)
 inline static std::string hash_tree_obj(const std::string &content)
 {
   std::string buf; // object
-  buf = "tree" + '\x00'  + content;
+  buf = "tree\n" + content;
 
   return buf;
 }

@@ -9,6 +9,7 @@ void init();
 void hash_object(const std::string&);
 void cat_file(const std::string&);
 void write_tree();
+void read_tree(const std::string&);
 
 int main(int argc,char* argv[]){
   return parse_args(argc,argv);
@@ -42,6 +43,11 @@ int parse_args(int argc, char *argv[])
   CLI::App* sc_write_tree=app.add_subcommand("write-tree","tree object");
   sc_write_tree->callback([&](){ write_tree(); });
 
+  // git read-tree
+  CLI::App* sc_read_tree=app.add_subcommand("read-tree","restore the workshop");
+  sc_read_tree->add_option("object",input_file,"tree oid need");
+  sc_read_tree->callback([&](){ read_tree(input_file);});
+
   CLI11_PARSE(app,argc,argv);
 
   return 0;
@@ -62,7 +68,7 @@ void hash_object(const std::string &args)
 void cat_file(const std::string & args)
 {
   std::string oid=args;
-  std::string res=DATA::cat_file(oid,"");
+  std::string res=DATA::get_object(oid,"");
   std::cout<<(res.empty()?"cat_file failed":res)<<std::endl;
 }
 
@@ -71,3 +77,13 @@ void write_tree()
   std::string oid=BASE::write_tree(DATA::CUR_DIR+"/");
   printf("tree %s\n",oid.c_str());
 }
+
+void read_tree(const std::string & args)
+{
+  std::string oid=args;
+  BASE::read_tree(oid);
+}
+
+
+
+

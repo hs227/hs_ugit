@@ -70,7 +70,7 @@ namespace DATA
     return oid;
   }
 
-  std::string cat_file(const std::string &oid, const std::string expected)
+  std::string get_object(const std::string &oid, const std::string expected)
   {
     std::filesystem::path filename=OBJECTS_DIR+"/"+oid;
 
@@ -78,18 +78,22 @@ namespace DATA
     if(!std::filesystem::exists(filename)){
       return "";
     }
-    std::ifstream in(filename,std::ios::binary);
+    std::ifstream in(filename,std::ios::binary|std::ios::ate);
     if(!in.is_open()){
       return "";
     }
+    size_t len=in.tellg();
+    in.seekg(0);
+
     std::string buf;
-    in>>buf;
+    buf.resize(len);
+    in.read(buf.data(),len);
     in.close();
     
     //解析提取文件
     std::string type;
     std::string content;
-    size_t split_pos=buf.find('\x00');
+    size_t split_pos=buf.find(' ');
     type=buf.substr(0,split_pos);
     content=buf.substr(split_pos+1);
 

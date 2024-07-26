@@ -19,6 +19,19 @@ struct wt_iter_node
     return name.compare(rhs.name) <= 0;
   }
 };
+// for get tree
+struct gt_iter_node
+{
+  std::string src;// oid in objects
+  std::string dst;// path in workshop
+
+  bool operator<(const gt_iter_node& rhs) const
+  {
+    return dst.compare(rhs.dst)<=0;
+  }
+};
+
+
 // for file_hash parameter passing
 struct wt_fh_node
 {
@@ -185,4 +198,9 @@ static inline std::string write_tree_compact(const std::string &path)
   std::string res_oid = DATA::hash_object(tree_data, "tree");
   return res_oid;
 }
+
+
+
+
+
 #endif

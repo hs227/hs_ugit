@@ -1,0 +1,14 @@
+read-tree: Extract tree from object
+from:https://www.leshenko.net/p/ugit/#read-tree
+
+
+
+from:leaving knife
+fixed c6:
+  修改了c6中错误的函数名:data.cpp:cat_file->get_object
+  修改c6中的object结构:{type_tag+'\x00'+content}->{type_tag+'\n'+content}
+
+
+
+
+

@@ -1,10 +1,10 @@
-#include"base.h"
-#include<filesystem>
+#include "base.h"
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 
-
-#include"data.h"
-#include"base_other.h"
-
+#include "data.h"
+#include "base_other.h"
 
 namespace BASE
 {
@@ -16,14 +16,85 @@ namespace BASE
     // structure version
     // std::string oid;
     // iter_files(directory,
-    //            file_nothing, file_nothing, 
+    //            file_nothing, file_nothing,
     //            is_ignore,
     //            file_hash, file_entries_e,
     //            (void*)&oid);
     // return oid;
 
     // compact version
-    std::string oid=write_tree_compact(directory);
+    std::string oid = write_tree_compact(directory);
     return oid;
   }
+
+  void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree)
+  {
+    std::string content = DATA::get_object(tree, "tree");
+    std::stringstream ss(content);
+
+    while (!ss.eof())
+    {
+      std::string type;
+      std::string oid;
+      std::string name;
+      ss >> type >> oid >> name;
+      if (type != "")
+        entries.insert({type, oid, name});
+    }
+  }
+
+  void get_tree(std::set<gt_iter_node> &results,
+                const std::string &oid,
+                const std::string &base_path = "")
+  {
+    results.clear();
+    std::set<wt_iter_node> entries;
+    iter_tree_entries(entries, oid);
+
+    for (const auto &entry : entries)
+    {
+      if (entry.type == "blob")
+      {
+        gt_iter_node node;
+        node.src = entry.oid;
+        node.dst = base_path + entry.name;
+        results.insert(node);
+      }
+      else if (entry.type == "tree")
+      {
+        std::set<gt_iter_node> res;
+        std::string path = base_path + entry.name + "/";
+        get_tree(res, entry.oid, path);
+        results.insert(res.begin(), res.end());
+      }
+    }
+  }
+
+  void read_tree(const std::string &oid)
+  {
+    std::set<gt_iter_node> entries;
+    get_tree(entries, oid); // get all blob in tree
+    std::string cur_path = DATA::CUR_DIR;
+
+    for (const auto &entry : entries)
+    {
+      std::cout << entry.src << " -> " << entry.dst << std::endl;
+      std::filesystem::path path(cur_path + "/" + entry.dst);
+      std::filesystem::path dir = path.parent_path();
+      std::filesystem::path file = path.filename();
+      // dir create
+      std::filesystem::create_directories(dir);
+      // input
+      std::string buf = DATA::get_object(entry.src, "blob");
+      // output
+      std::ofstream out(path, std::ios::binary | std::ios::ate);
+      if (!out.is_open())
+      {
+        continue;
+      }
+      out.write(buf.data(), buf.size());
+      out.close();
+    }
+  }
+
 }
