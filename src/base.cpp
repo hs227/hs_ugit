@@ -120,4 +120,11 @@ namespace BASE
     }
   }
 
+  std::string commit(const std::string & msg)
+  {
+    std::string commit_data = "tree " + write_tree(DATA::CUR_DIR + "/") + "\n";
+    commit_data+="\n";
+    commit_data+=msg+"\n";
+    return DATA::hash_object(commit_data,"commit");
+  }
 }

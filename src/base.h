@@ -10,6 +10,7 @@ namespace BASE
 {
   std::string write_tree(std::string =".");
   void read_tree(const std::string& );
+  std::string commit(const std::string&);
 }
 
 #endif

@@ -39,5 +39,13 @@ inline static std::string hash_tree_obj(const std::string &content)
 
   return buf;
 }
+// for the prepare hash obj"commit"
+inline static std::string hash_commit_obj(const std::string& content)
+{
+  std::string buf;  // object
+  buf="commit\n"+content;
+
+  return buf;
+}
 
 #endif

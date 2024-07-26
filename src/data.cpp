@@ -46,6 +46,8 @@ namespace DATA
       data=hash_blob_obj(data_);
     }else if(type=="tree"){
       data=hash_tree_obj(data_);
+    }else if(type=="commit"){
+      data=hash_commit_obj(data_);
     }
 
     // SHA1作为object的文件名

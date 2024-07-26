@@ -10,6 +10,7 @@ void hash_object(const std::string&);
 void cat_file(const std::string&);
 void write_tree();
 void read_tree(const std::string&);
+void commit(const std::string&);
 
 int main(int argc,char* argv[]){
   return parse_args(argc,argv);
@@ -45,8 +46,14 @@ int parse_args(int argc, char *argv[])
 
   // git read-tree
   CLI::App* sc_read_tree=app.add_subcommand("read-tree","restore the workshop");
-  sc_read_tree->add_option("object",input_file,"tree oid need");
+  sc_read_tree->add_option("tree",input_file,"tree oid need");
   sc_read_tree->callback([&](){ read_tree(input_file);});
+
+  // git commit
+  CLI::App* sc_commit=app.add_subcommand("commit","a snapshot");
+  sc_commit->add_option("-m,--message",input_file,"commit need a message");
+  sc_commit->callback([&](){ commit(input_file);});
+
 
   CLI11_PARSE(app,argc,argv);
 
@@ -84,6 +91,8 @@ void read_tree(const std::string & args)
   BASE::read_tree(oid);
 }
 
-
-
-
+void commit(const std::string & args)
+{
+  std::string msg=args;
+  std::cout<<BASE::commit(msg)<<std::endl;
+}
