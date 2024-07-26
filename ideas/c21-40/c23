@@ -1,0 +1,9 @@
+tag: Resolve name to oid in argparse
+from: https://www.leshenko.net/p/ugit/#resolve-refs-argparse
+
+from:Nikita
+As input, the name be a ref (in which case get_oid will return the OID that the ref points to) or an OID (in which case get_oid will just return that same OID).
+
+through the BASE::get_oid,we will get OID final
+
+

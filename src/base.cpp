@@ -177,5 +177,17 @@ namespace BASE
   {
     DATA::update_ref(name,oid);
   }
+  // in: name(oid or ref)
+  // out:oid
+  std::string get_oid(const std::string& name)
+  {
+    std::string might_oid=DATA::get_ref(name);
+    if(might_oid==""){
+      // name is oid
+      return name;
+    }
+    // name is ref
+    return might_oid;
+  }
 
 }

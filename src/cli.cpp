@@ -4,7 +4,9 @@
 #include "base.h"
 
 int parse_args(int argc, char *argv[]);
-
+// argument modify
+void modifier_name(std::string&);
+// subcommand
 void init();
 void hash_object(const std::string &);
 void cat_file(const std::string &);
@@ -14,6 +16,7 @@ void commit(const std::string &);
 void log(const std::string &);
 void checkout(const std::string&);
 void tag(const std::string&,const std::string&);
+
 
 int main(int argc, char *argv[])
 {
@@ -45,47 +48,63 @@ int parse_args(int argc, char *argv[])
   // git cat-file
   CLI::App *sc_cat_file = app.add_subcommand("cat-file", "print file content");
   sc_cat_file->add_option("object", input_file, "oid need")->required();
-  sc_cat_file->callback([&]()
-                        { cat_file(input_file); });
+  sc_cat_file->callback([&](){ 
+    modifier_name(input_file);
+    cat_file(input_file); });
 
   // git write-tree
   CLI::App *sc_write_tree = app.add_subcommand("write-tree", "tree object");
-  sc_write_tree->callback([&]()
-                          { write_tree(); });
+  sc_write_tree->callback([&](){ 
+    write_tree(); });
 
   // git read-tree
   CLI::App *sc_read_tree = app.add_subcommand("read-tree", "restore the workshop");
   sc_read_tree->add_option("tree", input_file, "tree oid need")->required();
-  sc_read_tree->callback([&]()
-                         { read_tree(input_file); });
+  sc_read_tree->callback([&](){ 
+    modifier_name(input_file);
+    read_tree(input_file); });
 
   // git commit
   CLI::App *sc_commit = app.add_subcommand("commit", "a snapshot");
   sc_commit->add_option("-m,--message", input_file, "commit need a message")->required();
-  sc_commit->callback([&]()
-                      { commit(input_file); });
+  sc_commit->callback([&](){ 
+    commit(input_file); });
 
   // git log
   CLI::App *sc_log = app.add_subcommand("log", "walk commit tree");
   sc_log->add_option("oid", input_file, "specify a oid rather than HEAD");
-  sc_log->callback([&]()
-                   { log(input_file); });
+  sc_log->callback([&](){ 
+    modifier_name(input_file);
+    log(input_file); });
 
   // git checkout
   CLI::App *sc_checkout=app.add_subcommand("checkout","read_tree+set_HEAD");
   sc_checkout->add_option("oid",input_file,"chose commit")->required();
-  sc_checkout->callback([&](){checkout(input_file);});
+  sc_checkout->callback([&](){
+    modifier_name(input_file);
+    checkout(input_file);});
   
   // git tag
   CLI::App *sc_tag=app.add_subcommand("tag","alias of OID");
   sc_tag->add_option("name",input_file,"tag name")->required();
   sc_tag->add_option("oid",output_file,"oid");
-  sc_tag->callback([&](){ tag(input_file,output_file);});
+  sc_tag->callback([&](){ 
+    modifier_name(output_file);
+    tag(input_file,output_file);});
 
 
   CLI11_PARSE(app, argc, argv);
 
   return 0;
+}
+
+void modifier_name(std::string &input)
+{ 
+  // oid/ref ->oid
+  if(input=="")
+    return;
+  std::string res=BASE::get_oid(input);
+  input=res;
 }
 
 void init()

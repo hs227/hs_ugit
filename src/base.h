@@ -24,6 +24,7 @@ namespace BASE
   commit_cxt get_commit(const std::string&);
   void checkout(const std::string&);
   void create_tag(const std::string&,const std::string&);
+  std::string get_oid(const std::string &);
 }
 
 #endif
