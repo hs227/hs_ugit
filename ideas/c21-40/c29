@@ -1,0 +1,11 @@
+log: Use iter_commits_and_parents
+from: https://www.leshenko.net/p/ugit/#log-generic-iteration
+
+
+from:Nikita
+it will be useful later(merge:not only one parent_commit)
+
+from:leaving_knife
+actually not understand why so important now.
+
+

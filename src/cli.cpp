@@ -159,18 +159,23 @@ void log(const std::string &args)
 {
 //  std::string oid = args != "" ? args : BASE::get_oid("HEAD");
   std::string oid=args;
-  while (oid != "")
-  {
-    BASE::commit_ctx cxt = BASE::get_commit(oid);
-    std::cout << "commit " << oid << "\n";
-    std::cout << "tree " << cxt.tree << "\n";
-    if (cxt.parent != "")
-      std::cout << "parent " << cxt.parent << "\n";
-    std::cout << "  " << cxt.msg << "\n";
-    std::cout << std::endl;
+  std::vector<std::string> oids;
+  oids.push_back(oid);
 
-    oid = cxt.parent;
+  // get all commits` oid
+  std::vector<std::string> commits = BASE::iter_commits_and_parents(oids);
+  for (const auto &cmt_oid : commits)
+  {
+    // oid -> Commit
+    BASE::commit_ctx ctx = BASE::get_commit(cmt_oid);
+    std::cout<<"commit "<<cmt_oid<<"\n";
+    std::cout<<"tree "<<ctx.tree<<"\n";
+    if (ctx.parent != "")
+      std::cout << "parent " << ctx.parent << std::endl;
+    std::cout<<" "<<ctx.msg<<"\n";
+    std::cout<<std::endl;
   }
+
 }
 
 void checkout(const std::string &args)
