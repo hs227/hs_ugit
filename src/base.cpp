@@ -137,7 +137,7 @@ namespace BASE
     DATA::update_ref("HEAD",oid);
     return oid;
   }
-
+  // oid -> commit_ctx
   commit_ctx get_commit(const std::string &oid)
   {
     std::string commit_data = DATA::get_object(oid, "commit");
@@ -176,10 +176,11 @@ namespace BASE
 
   void create_tag(const std::string & name, const std::string & oid)
   {
-    DATA::update_ref(name,oid);
+    std::string tag_path=DATA::LAB_GIT_DIR+"/refs/tags/"+name;
+    DATA::update_ref(tag_path,oid);
   }
 
-  // get the ref name
+  // get the ref path
   std::string get_ref_path(const std::string &name)
   {
     std::vector<std::string> refs_to_try;

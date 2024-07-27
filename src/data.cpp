@@ -81,6 +81,15 @@ namespace DATA
     std::string data;
     in>>data;
     in.close();
+
+
+    // if refs then need recur and finally get oid back
+    if(data.find("ref: ")==0){
+      std::string ref_name=data.substr(5);
+      ref_name=BASE::get_ref_path(ref_name);
+      return get_ref(ref_name);
+    }
+
     return data;
   }
 
@@ -155,7 +164,8 @@ namespace DATA
 
     return content;
   }
-
+  // get all the refs` name and refs` oid
+  // in: input is output
   void iter_refs(std::vector<std::string> &ref_name, std::vector<std::string> &ref_oid)
   {
     std::vector<std::string> refs;

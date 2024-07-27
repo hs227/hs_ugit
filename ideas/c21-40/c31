@@ -1,0 +1,13 @@
+data: Implement symbolic refs idea
+from:https://www.leshenko.net/p/ugit/#read-symbolic-ref
+
+
+point to ref: "ref: <refname>"
+point to oid: "oid"
+
+
+
+
+
+
+
