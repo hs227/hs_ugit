@@ -1,0 +1,17 @@
+branch: Create new branch
+from:https://www.leshenko.net/p/ugit/#create-new-branch
+
+from:Nikita
+tag just the alias of the oid.but branch attached with HEAD,can move with HEAD when commit.
+!!HEAD in '.ugit/HEAD'
+!!tags in '.ugit/refs/tags/'
+!!branch in '.ugit/heads/'
+
+!!if we checkout a branch by name, we'll do something different, we will update HEAD to point to the name of the branch!
+HEAD points to branch rather than the OID of the commit directly.
+To mirror Git's terminology, we will call a ref that points to another ref a "symbolic ref".
+
+
+
+
+

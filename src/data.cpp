@@ -44,7 +44,7 @@ namespace DATA
   // side:set the ref(HEAD or tags) 
   void update_ref(const std::string& ref,const std::string& oid)
   {
-    std::string path=get_ref(ref);
+    std::string path=ref;
     if(path==""){
       std::cout<<"update_ref path failed. \n";
       return;

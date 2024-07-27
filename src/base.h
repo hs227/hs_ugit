@@ -25,8 +25,10 @@ namespace BASE
   commit_ctx get_commit(const std::string&);
   void checkout(const std::string&);
   void create_tag(const std::string&,const std::string&);
+  std::string get_ref_path(const std::string &name);
   std::string get_oid(const std::string &);
   std::vector<std::string> iter_commits_and_parents(const std::vector<std::string> &);
+  void create_branch(const std::string& name,const std::string& oid);
 }
 
 #endif

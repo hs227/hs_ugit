@@ -170,13 +170,34 @@ namespace BASE
     read_tree(tree_oid);
 
     // set HEAD
-    DATA::update_ref("HEAD",commit_oid);
+    std::string head = DATA::LAB_GIT_DIR + "/" + "HEAD";
+    DATA::update_ref(head, commit_oid);
   }
 
   void create_tag(const std::string & name, const std::string & oid)
   {
     DATA::update_ref(name,oid);
   }
+
+  // get the ref name
+  std::string get_ref_path(const std::string &name)
+  {
+    std::vector<std::string> refs_to_try;
+    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/" + name);
+    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/" + name);
+    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/tags/" + name);
+    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/heads/" + name);
+
+    for (const auto &str : refs_to_try)
+    {
+      std::string res = DATA::get_ref(str);
+      if (res != "")
+        return res;
+    }
+    // failed
+    return "";
+  }
+
   // in: name(oid or ref)
   // out:oid
   std::string get_oid(const std::string& name)
@@ -213,5 +234,12 @@ namespace BASE
       ref_oids.insert(ctx.parent);
     }
     return res;
+  }
+
+  void create_branch(const std::string &name, const std::string &oid)
+  {
+    std::string path=DATA::LAB_GIT_DIR+"/"+"refs/heads/"+name;
+    
+    DATA::update_ref(path,oid);
   }
 }

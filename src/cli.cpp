@@ -19,6 +19,7 @@ void log(const std::string &);
 void checkout(const std::string&);
 void tag(const std::string&,const std::string&);
 void k();
+void branch(const std::string&,const std::string&);
 
 int main(int argc, char *argv[])
 {
@@ -99,6 +100,15 @@ int parse_args(int argc, char *argv[])
   // git k
   CLI::App *sc_k=app.add_subcommand("k","visualization tool");
   sc_k->callback([&](){k();});
+
+
+  // git branch
+  CLI::App *sc_branch=app.add_subcommand("branch","create a branch");
+  sc_branch->add_option("name",input_file,"branch name")->required();
+  sc_branch->add_option("oid",output_file,"oid");
+  sc_branch->callback([&](){
+    modifier_name(output_file);
+    branch(input_file,output_file);});
 
   CLI11_PARSE(app, argc, argv);
 
@@ -261,4 +271,10 @@ void k()
   std::string image_cmd = "imageglass " + png_file_path;
   system(image_cmd.c_str());
 
+}
+
+void branch(const std::string & name, const std::string & oid)
+{
+  BASE::create_branch(name,oid);
+  std::cout<< "create branch ["<<name<<"] at "<<oid<<std::endl;
 }
