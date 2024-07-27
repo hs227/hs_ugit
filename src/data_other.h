@@ -47,8 +47,20 @@ inline static std::string hash_commit_obj(const std::string& content)
 
   return buf;
 }
-
-
-
+// the dir_iter of iter_refs
+inline static void iter_refs_recur(const std::string &path, std::vector<std::string> &refs)
+{
+  for(const auto& entry:std::filesystem::directory_iterator(path)){
+    if(entry.is_regular_file()){
+      // one file is one ref
+      std::string relpath = std::filesystem::relative(entry.path().string(), DATA::LAB_GIT_DIR)
+                                .string();
+      refs.push_back(entry.path().string());
+    }else if(entry.is_directory()){
+      // dir
+      iter_refs_recur(entry.path().string(), refs);
+    }
+  }  
+}
 
 #endif

@@ -16,7 +16,7 @@ void commit(const std::string &);
 void log(const std::string &);
 void checkout(const std::string&);
 void tag(const std::string&,const std::string&);
-
+void k();
 
 int main(int argc, char *argv[])
 {
@@ -91,10 +91,12 @@ int parse_args(int argc, char *argv[])
   sc_tag->add_option("name",input_file,"tag name")->required();
   sc_tag->add_option("oid",output_file,"oid");
   sc_tag->callback([&](){ 
-
     modifier_name(output_file);
     tag(input_file,output_file);});
 
+  // git k
+  CLI::App *sc_k=app.add_subcommand("k","visualization tool");
+  sc_k->callback([&](){k();});
 
   CLI11_PARSE(app, argc, argv);
 
@@ -187,9 +189,12 @@ void tag(const std::string & arg_name, const std::string & arg_oid)
   BASE::create_tag(arg_name,oid);
 }
 
-
-
-
-
-
-
+void k()
+{
+  std::vector<std::string> data;
+  DATA::iter_refs(&data);
+  // i is refname, i+1 is get_ref(refname)
+  for(size_t i=0;i<data.size();i+=2){
+    std::cout<<data[i]<<" "<<data[i+1]<<std::endl;
+  }
+}

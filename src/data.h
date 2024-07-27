@@ -26,6 +26,7 @@ namespace DATA{
   std::string get_ref(const std::string &);
   std::string hash_object(const std::string &, const std::string = "blob");
   std::string get_object(const std::string&,const std::string="blob");
+  void iter_refs(void* returns_);
 }
 
 #endif

@@ -1,0 +1,7 @@
+k: Print refs
+from:https://www.leshenko.net/p/ugit/#k-print-refs
+
+from:Nikita
+The visualization tool will draw all refs and all the commits pointed by the refs.
+Now let's just print all refs when running k.
+
