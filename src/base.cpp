@@ -138,12 +138,12 @@ namespace BASE
     return oid;
   }
 
-  commit_cxt get_commit(const std::string &oid)
+  commit_ctx get_commit(const std::string &oid)
   {
     std::string commit_data = DATA::get_object(oid, "commit");
-    commit_cxt res;
+    commit_ctx res;
     if (commit_data == "")
-      return commit_cxt();
+      return commit_ctx();
     std::stringstream ss(commit_data);
     std::string tag;
     while (ss){
@@ -163,7 +163,7 @@ namespace BASE
   void checkout(const std::string &commit_oid)
   {
     // restore workshop
-    commit_cxt cxt = get_commit(commit_oid);
+    commit_ctx cxt = get_commit(commit_oid);
     if (cxt.tree == "")
       return;
     std::string &tree_oid = cxt.tree;
@@ -190,5 +190,28 @@ namespace BASE
     // name is ref
     return might_oid;
   }
-
+  // in: set of refs` oid
+  // out: visited commits` oid
+  std::vector<std::string> iter_commits_and_parents(const std::vector<std::string> &ref_oids_)
+  {
+    std::set<std::string> ref_oids;
+    std::set<std::string> visited;
+    std::vector<std::string> res;
+    
+    // ref_oids init
+    ref_oids.insert(ref_oids_.begin(),ref_oids_.end());
+    // refs->commits
+    while(!ref_oids.empty()){
+      std::string oid=*ref_oids.begin();
+      ref_oids.erase(ref_oids.begin());
+      if(oid==""||visited.count(oid)>0)
+        continue;
+      visited.insert(oid);
+      res.push_back(oid);
+      
+      commit_ctx ctx = get_commit(oid);
+      ref_oids.insert(ctx.parent);
+    }
+    return res;
+  }
 }

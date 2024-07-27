@@ -159,7 +159,7 @@ void log(const std::string &args)
   std::string oid=args;
   while (oid != "")
   {
-    BASE::commit_cxt cxt = BASE::get_commit(oid);
+    BASE::commit_ctx cxt = BASE::get_commit(oid);
     std::cout << "commit " << oid << "\n";
     std::cout << "tree " << cxt.tree << "\n";
     if (cxt.parent != "")
@@ -197,4 +197,22 @@ void k()
   for(size_t i=0;i<data.size();i+=2){
     std::cout<<data[i]<<" "<<data[i+1]<<std::endl;
   }
+  // erse the refnames, restore the oids
+  for(auto it=data.begin();it!=data.end();){
+    int index=it-data.begin();
+    if(index%2==0){
+      it=data.erase(it);
+    }else{
+      it++;
+    }
+  }
+  std::vector<std::string> commits=BASE::iter_commits_and_parents(data);
+  for(const auto& cmt:commits){
+    BASE::commit_ctx ctx=BASE::get_commit(cmt);
+    std::cout<<cmt;
+    if(ctx.parent!="")
+      std::cout<<" "<<ctx.parent<<std::endl;
+  }
+
+  // TODO visualize refs
 }

@@ -1,0 +1,10 @@
+k: Iterate commits and parents
+from:https://www.leshenko.net/p/ugit/#k-iterate-commits
+
+from:Nikita
+"ter_commits_and_parents", which is a generator that returns all commits that it can reach from a given set of OIDs.
+
+from:leaving_knife
+fix:
+  fix the struct_name:commit_cxt->commit_ctx
+
