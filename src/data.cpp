@@ -156,21 +156,17 @@ namespace DATA
     return content;
   }
 
-  void iter_refs(void *returns_)
+  void iter_refs(std::vector<std::string> &ref_name, std::vector<std::string> &ref_oid)
   {
-    if(returns_==NULL)
-      return;
     std::vector<std::string> refs;
     refs.push_back(LAB_GIT_DIR + "/" + "HEAD");
 
     const std::string refs_dir=LAB_GIT_DIR+"/"+"refs/";
     iter_refs_recur(refs_dir,refs);
 
-    // x is refname,x+1 is get_ref(refname)
-    std::vector<std::string> *returns = (std::vector<std::string> *)returns_;
     for(const auto& refname:refs){
-      returns->push_back(refname);
-      returns->push_back(get_ref(refname));
+      ref_name.push_back(refname);// name
+      ref_oid.push_back(get_ref(refname));// oid
     }
 
   }

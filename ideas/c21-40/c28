@@ -1,0 +1,19 @@
+k: Render graph
+from:https://www.leshenko.net/p/ugit/#k-render-graph
+
+
+
+from:Nikita
+use the "dot" textual format by Graphviz
+
+from:leaving_knife
+Graphviz?
+Graphviz是一个用于生成流程图和图形布局的工具集。它本身并不是一个 C++ 库，而是一个独立的程序集，可以通过命令行或者脚本语言来调用。
+本项目通过popen调用Graphviz程序，将dot_format字符串输入，并通过Graphviz绘图。
+通过DOTnamespace完成dot_build.
+在'../resource/graphviz'创建.dot文件，后用PIPE调用Graphviz软件.
+dot文件转换为png图片文件。
+此处(ugit)额外调用图片查看器打开png图片。我选在跨平台的开源ImageGlass。
+
+
+

@@ -1,7 +1,9 @@
 #include "include/CLI11.hpp"
 #include <stdio.h>
+#include <stdlib.h>
 #include "data.h"
 #include "base.h"
+#include "dotter.h"
 
 int parse_args(int argc, char *argv[]);
 // argument modify
@@ -191,28 +193,67 @@ void tag(const std::string & arg_name, const std::string & arg_oid)
 
 void k()
 {
-  std::vector<std::string> data;
-  DATA::iter_refs(&data);
-  // i is refname, i+1 is get_ref(refname)
-  for(size_t i=0;i<data.size();i+=2){
-    std::cout<<data[i]<<" "<<data[i+1]<<std::endl;
+  // 显示的oid位数
+  const size_t oid_len = 6;
+  DOT::dot_ctx cmt_ctx;
+  DOT::init_dotter(&cmt_ctx, "commit");
+
+  // refs
+  std::vector<std::string> refs_name;
+  std::vector<std::string> refs_oid;
+  DATA::iter_refs(refs_name, refs_oid);
+  for (size_t i = 0; i < refs_name.size(); ++i)
+  {
+    std::cout << refs_name[i] << " " << refs_oid[i] << std::endl;
+    refs_name[i] = std::filesystem::path(refs_name[i]).filename().string();
+    std::string text1 = "  \"" + refs_name[i] + "\" [shape=\"record\"];\n";
+    std::string text2 = "  \"" + refs_name[i] + "\" -> \"" + refs_oid[i].substr(0, 6) + "\";\n";
+    DOT::add_text(&cmt_ctx, text1);
+    DOT::add_text(&cmt_ctx, text2);
   }
-  // erse the refnames, restore the oids
-  for(auto it=data.begin();it!=data.end();){
-    int index=it-data.begin();
-    if(index%2==0){
-      it=data.erase(it);
-    }else{
-      it++;
+  // HEAD ref
+  std::string text_head =
+      "  \"HEAD\" [style=\"filled\",fillcolor=\"red\"];\n";
+  DOT::add_text(&cmt_ctx, text_head);
+
+  // get all commits` oid
+  std::vector<std::string> commits = BASE::iter_commits_and_parents(refs_oid);
+  for (const auto &cmt_oid : commits)
+  {
+    // oid -> Commit
+    BASE::commit_ctx ctx = BASE::get_commit(cmt_oid);
+    std::cout << cmt_oid;
+    if (ctx.parent != "")
+    {
+      std::cout << " " << ctx.parent << std::endl;
+      std::string text = "  \"" + cmt_oid.substr(0, 6) + "\" -> \"" + ctx.parent.substr(0, 6) + "\";\n";
+      DOT::add_text(&cmt_ctx, text);
     }
   }
-  std::vector<std::string> commits=BASE::iter_commits_and_parents(data);
-  for(const auto& cmt:commits){
-    BASE::commit_ctx ctx=BASE::get_commit(cmt);
-    std::cout<<cmt;
-    if(ctx.parent!="")
-      std::cout<<" "<<ctx.parent<<std::endl;
-  }
+  // ".dot" file create
+  std::cout << "\nDOT\n";
+  std::string buf = DOT::build_dot(&cmt_ctx);
+  std::string file_path = DOT::dot_write_out(buf, "tmp.dot");
+  std::cout << buf;
 
-  // TODO visualize refs
+  // subprocess(graphviz) PIPE:popen/pclose
+  if (file_path == "")
+    return;
+  std::string png_file_path = file_path.substr(0, file_path.length() - 3) + "png";
+  file_path = std::filesystem::absolute(file_path).string();
+  png_file_path = std::filesystem::absolute(png_file_path).string();
+  std::string graph_cmd = "dot -Tpng " + file_path + " -o " + png_file_path;
+  std::cout << "graph_cmd: " << graph_cmd << std::endl;
+  
+  FILE *graph_fp = _popen(graph_cmd.c_str(), "w");
+  if (graph_fp == NULL)
+    return;
+  fwrite(buf.data(), buf.size(), 1, graph_fp);
+  int res = _pclose(graph_fp);
+  printf("k=%d\n", res);
+  // return;
+  //  subprocess(imageglass) system(no need PIPE)
+  std::string image_cmd = "imageglass " + png_file_path;
+  system(image_cmd.c_str());
+
 }

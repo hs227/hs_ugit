@@ -1,0 +1,9 @@
+digraph commit{
+  "HEAD" [shape="record"];
+  "HEAD" -> "2825b0";
+  "visitor" [shape="record"];
+  "visitor" -> "2825b0";
+  "HEAD" [style="filled",fillcolor="red"];
+  "2825b0" -> "f59bd7";
+  "f59bd7" -> "e963d7";
+}

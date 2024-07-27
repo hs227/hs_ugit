@@ -1,2 +1,7 @@
 # all executable file
 *.exe
+
+tests/graphviz/*.png
+
+
+

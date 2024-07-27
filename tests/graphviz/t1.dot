@@ -1,0 +1,24 @@
+digraph commits{
+  cmt1 [shape=record,label="{c1|HEAD}",style="filled",fillcolor=red1];
+  cmt2 [shape=record,label=c2];
+  cmt3 [shape=record,label=c3];
+  cmt4 [shape=record,label=c4];
+  cmt5 [shape=record,label=c5];
+
+  cmt1 -> cmt2;
+  cmt2 -> cmt3;
+  cmt3 -> cmt4;
+  cmt5 -> cmt2;
+
+
+  ref1 [label=HEAD];
+  ref2 [label=visitor];
+  ref3 [label=master];
+
+  ref1 -> cmt1;
+  ref2 -> cmt1;
+  ref3 -> cmt1;
+
+
+
+}

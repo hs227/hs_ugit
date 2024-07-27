@@ -3,6 +3,7 @@
 
 #include<iostream>
 #include<map>
+#include<vector>
 
 #define BOOL_STR(x) \
   ((x) ? "True" : "False")
@@ -26,7 +27,7 @@ namespace DATA{
   std::string get_ref(const std::string &);
   std::string hash_object(const std::string &, const std::string = "blob");
   std::string get_object(const std::string&,const std::string="blob");
-  void iter_refs(void* returns_);
+  void iter_refs(std::vector<std::string>& ref_name,std::vector<std::string>& ref_oid);
 }
 
 #endif
