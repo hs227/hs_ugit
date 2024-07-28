@@ -1,0 +1,11 @@
+data: Dereference refs when reading and writing
+from:https://www.leshenko.net/p/ugit/#deref-symbolic-refs-on-write
+
+
+from:Nikita
+Now we'll dereference symbolic refs not only when reading them but also when writing them.
+_get_ref_internal will return the path and the value of the last ref pointed by a symbolic ref.
+
+
+
+

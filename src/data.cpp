@@ -37,6 +37,39 @@ namespace DATA
     }
   }
 
+
+  // in: ref_path
+  // out: RefValue(false,oid)
+  gri_res get_ref_internal(const std::string &ref)
+  {
+    std::string path = ref;
+
+    if (!std::filesystem::exists(path))
+    {
+      return gri_res();
+    }
+    // ref 存在
+    std::ifstream in(path, std::ios::binary);
+    if (!in.is_open())
+    {
+      std::cout << "get_ref failed\n";
+      return gri_res();
+    }
+    std::string data;
+    in >> data;
+    in.close();
+
+    // if refs then need recur and finally get oid back
+    if (data.find("ref: ") == 0)
+    {
+      std::string ref_name = data.substr(5);
+      ref_name = BASE::get_ref_path(ref_name);
+      return get_ref_internal(ref_name);
+    }
+
+    return gri_res(path,RefValue(false,data));
+  }
+
   // create the reference
   // in:ref_name,refValue
   // side:set the ref(HEAD or tags)
@@ -60,35 +93,15 @@ namespace DATA
     out.close();
     return;
   }
+
+
+
   // ref->oid
   // in: ref
   // out:RefValue::oid
-  RefValue get_ref(const std::string& ref)
+  RefValue get_ref(const std::string &ref)
   {
-    std::string path = ref;
-
-    if(!std::filesystem::exists(path)){
-      return RefValue();
-    }
-    // ref 存在
-    std::ifstream in(path,std::ios::binary);
-    if(!in.is_open()){
-      std::cout<<"get_ref failed\n";
-      return RefValue();
-    }
-    std::string data;
-    in>>data;
-    in.close();
-
-
-    // if refs then need recur and finally get oid back
-    if(data.find("ref: ")==0){
-      std::string ref_name=data.substr(5);
-      ref_name=BASE::get_ref_path(ref_name);
-      return get_ref(ref_name);
-    }
-
-    return RefValue(false,data);
+    return get_ref_internal(ref).value;
   }
 
 

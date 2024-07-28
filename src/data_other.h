@@ -63,4 +63,17 @@ inline static void iter_refs_recur(const std::string &path, std::vector<std::str
   }  
 }
 
+// for get_ref_internal`s return
+struct gri_res
+{
+  std::string path;
+  DATA::RefValue value;
+  gri_res()
+    :path(""),value()
+  {}
+  gri_res(const std::string& path_,const DATA::RefValue& value_)
+    :path(path_),value(value_)
+  {}
+};
+
 #endif
