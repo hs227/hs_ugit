@@ -12,8 +12,6 @@
 namespace DATA
 {
 
-  std::map<std::string, obj_type> type_map = {{"blob", obj_type::blob}};
-
   void init()
   {
     // .ugit
@@ -40,9 +38,9 @@ namespace DATA
   }
 
   // create the reference
-  // in:ref_name,oid
-  // side:set the ref(HEAD or tags) 
-  void update_ref(const std::string& ref,const std::string& oid)
+  // in:ref_name,refValue
+  // side:set the ref(HEAD or tags)
+  void update_ref(const std::string &ref, const RefValue &value)
   {
     std::string path=ref;
     if(path==""){
@@ -58,25 +56,25 @@ namespace DATA
       return;
     }
 
-    out.write(oid.data(),oid.size());
+    out.write(value.value.data(),value.value.size());
     out.close();
     return;
   }
   // ref->oid
   // in: ref
-  // out:oid
-  std::string get_ref(const std::string& ref)
+  // out:RefValue::oid
+  RefValue get_ref(const std::string& ref)
   {
     std::string path = ref;
 
     if(!std::filesystem::exists(path)){
-      return "";
+      return RefValue();
     }
     // ref 存在
     std::ifstream in(path,std::ios::binary);
     if(!in.is_open()){
       std::cout<<"get_ref failed\n";
-      return "";
+      return RefValue();
     }
     std::string data;
     in>>data;
@@ -90,7 +88,7 @@ namespace DATA
       return get_ref(ref_name);
     }
 
-    return data;
+    return RefValue(false,data);
   }
 
 
@@ -176,7 +174,7 @@ namespace DATA
 
     for(const auto& refname:refs){
       ref_name.push_back(refname);// name
-      ref_oid.push_back(get_ref(refname));// oid
+      ref_oid.push_back(get_ref(refname).value);// oid
     }
 
   }

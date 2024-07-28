@@ -16,15 +16,23 @@ namespace DATA{
   const std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
   const std::string HEAD_PATH=LAB_GIT_DIR+"/"+"HEAD";
 
-  enum class obj_type: int {blob=0};
-
-  extern std::map<std::string,obj_type> type_map;
+  struct RefValue
+  {
+    bool is_symbolic;
+    std::string value;// true:ref;false:oid
+    RefValue()
+      :value(""),is_symbolic(false)
+    {}
+    RefValue(bool is_symbolic_,const std::string& value_)
+      :is_symbolic(is_symbolic_),value(value_)
+    {}
+  };
 
 
 
   void init();
-  void update_ref(const std::string &, const std::string &);
-  std::string get_ref(const std::string &);
+  void update_ref(const std::string &, const RefValue &);
+  RefValue get_ref(const std::string &);
   std::string hash_object(const std::string &, const std::string = "blob");
   std::string get_object(const std::string&,const std::string="blob");
   void iter_refs(std::vector<std::string>& ref_name,std::vector<std::string>& ref_oid);
