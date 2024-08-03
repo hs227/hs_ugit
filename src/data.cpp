@@ -184,9 +184,9 @@ namespace DATA
     return content;
   }
   // get all the refs` name and refs` oid
-  // in: deref
+  // in: prefix(distinguish tag/branch),deref
   // output: ref_name,ref_oid
-  void iter_refs(std::vector<std::string> &ref_name, std::vector<RefValue> &ref_value, bool deref)
+  void iter_refs(std::vector<std::string> &ref_name, std::vector<RefValue> &ref_value, const std::string prefix, bool deref)
   {
     std::vector<std::string> refs;
     refs.push_back(LAB_GIT_DIR + "/" + "HEAD");
@@ -195,6 +195,12 @@ namespace DATA
     iter_refs_recur(refs_dir,refs);
 
     for(const auto& refname:refs){
+      if(!prefix.empty()&&refname.find(prefix)==std::string::npos){
+        // example: 
+        // prefix="heads"-> get 'branch'
+        // prefix="tags" -> get 'tag'
+        continue;
+      }
       ref_name.push_back(refname);// name
       ref_value.push_back(get_ref(refname,deref));// value
     }

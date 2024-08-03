@@ -1,0 +1,14 @@
+branch: Show all branches
+from: https://www.leshenko.net/p/ugit/#show-all-branches
+
+
+from:Nikita
+ We already have data.iter_refs which iterates over all refs, and branches are just refs that live under refs/heads/ namespace. Let's add a prefix argument to data.iter_refs so that the caller can restrict which refs it will get.
+
+
+
+
+
+
+
+

@@ -104,7 +104,7 @@ int parse_args(int argc, char *argv[])
 
   // git branch
   CLI::App *sc_branch=app.add_subcommand("branch","create a branch");
-  sc_branch->add_option("name",input_file,"branch name")->required();
+  sc_branch->add_option("name",input_file,"branch name");
   sc_branch->add_option("oid",output_file,"oid");
   sc_branch->callback([&](){
     modifier_name(output_file);
@@ -220,7 +220,7 @@ void k()
   std::vector<std::string> refs_name;
   std::vector<DATA::RefValue> refs_value;
   std::vector<std::string> refs_oid;
-  DATA::iter_refs(refs_name, refs_value,false);
+  DATA::iter_refs(refs_name, refs_value,"",false);
   for (size_t i = 0; i < refs_name.size(); ++i)
   {
     std::string name_here;
@@ -289,10 +289,24 @@ void k()
 
 }
 
-void branch(const std::string & name, const std::string & oid)
+void branch(const std::string & arg_name, const std::string & arg_oid)
 {
-  BASE::create_branch(name,oid);
-  std::cout<< "create branch ["<<name<<"] at "<<oid<<std::endl;
+  if(arg_name.empty()){
+    // show all branches
+    std::vector<std::string> branches=BASE::iter_branch_names();
+    DATA::RefValue head_value = DATA::get_ref(DATA::HEAD_PATH, false);
+    for(const auto& name:branches){
+      if(head_value.is_symbolic&&head_value.value==name){
+        std::cout<<"*"<<name<<"\n";
+        continue;
+      }
+      std::cout<<" "<<name<<"\n";
+    }
+  }else{
+    // create branch
+    BASE::create_branch(arg_name,arg_oid);
+    std::cout<< "create branch ["<<arg_name<<"] at "<<arg_oid<<std::endl;
+  }
 }
 
 void status()

@@ -34,7 +34,7 @@ namespace DATA{
   RefValue get_ref(const std::string &ref,bool deref=true);
   std::string hash_object(const std::string &, const std::string = "blob");
   std::string get_object(const std::string&,const std::string="blob");
-  void iter_refs(std::vector<std::string> &ref_name, std::vector<RefValue> &ref_value, bool deref = true);
+  void iter_refs(std::vector<std::string> &ref_name, std::vector<RefValue> &ref_value, const std::string prefix="", bool deref = true);
 }
 
 #endif
