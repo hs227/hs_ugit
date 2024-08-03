@@ -20,6 +20,7 @@ void checkout(const std::string&);
 void tag(const std::string&,const std::string&);
 void k();
 void branch(const std::string&,const std::string&);
+void status();
 
 int main(int argc, char *argv[])
 {
@@ -108,6 +109,12 @@ int parse_args(int argc, char *argv[])
   sc_branch->callback([&](){
     modifier_name(output_file);
     branch(input_file,output_file);});
+
+  // git status
+  CLI::App *sc_status=app.add_subcommand("status","print information");
+  sc_status->callback([&](){
+    status();});
+
 
   CLI11_PARSE(app, argc, argv);
 
@@ -286,4 +293,18 @@ void branch(const std::string & name, const std::string & oid)
 {
   BASE::create_branch(name,oid);
   std::cout<< "create branch ["<<name<<"] at "<<oid<<std::endl;
+}
+
+void status()
+{
+  // print current branch name
+  std::string head_path=DATA::HEAD_PATH;
+  DATA::RefValue head_value=DATA::get_ref(head_path,false);
+  if(head_value.is_symbolic){
+    std::string tmp=std::filesystem::path(head_value.value).filename().string();
+    printf("On branch :%s\n", tmp.c_str());
+  }else{
+    printf("HEAD detached at :%s\n",head_value.value.c_str());
+  }
+  
 }
