@@ -198,7 +198,7 @@ namespace BASE
 
     for (const auto &str : refs_to_try)
     {
-      std::string intact_refname = DATA::get_ref(str).value;
+      std::string intact_refname = DATA::get_ref(str,false).value;
       if (intact_refname != "")
         return intact_refname;
     }

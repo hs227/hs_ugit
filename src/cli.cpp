@@ -114,11 +114,9 @@ int parse_args(int argc, char *argv[])
 
   return 0;
 }
-
+// oid/ref ->oid
 void modifier_name(std::string &input, std::string default_)
 { 
-  // oid/ref ->oid
-  
   if(input==""){
     if(default_=="")
       return;
@@ -214,14 +212,27 @@ void k()
 
   // refs
   std::vector<std::string> refs_name;
+  std::vector<DATA::RefValue> refs_value;
   std::vector<std::string> refs_oid;
-  DATA::iter_refs(refs_name, refs_oid);
+  DATA::iter_refs(refs_name, refs_value,false);
   for (size_t i = 0; i < refs_name.size(); ++i)
   {
-    std::cout << refs_name[i] << " " << refs_oid[i] << std::endl;
-    refs_name[i] = std::filesystem::path(refs_name[i]).filename().string();
-    std::string text1 = "  \"" + refs_name[i] + "\" [shape=\"record\"];\n";
-    std::string text2 = "  \"" + refs_name[i] + "\" -> \"" + refs_oid[i].substr(0, 6) + "\";\n";
+    std::string name_here;
+    std::string ref_here;
+
+
+    std::cout << refs_name[i] << " : " << refs_value[i].value << std::endl;
+    name_here = std::filesystem::path(refs_name[i]).filename().string();
+    if (refs_value[i].is_symbolic){
+      refs_oid.push_back(DATA::get_ref(refs_value[i].value,true).value);
+      ref_here = std::filesystem::path(refs_value[i].value).filename().string();
+    }else{
+      refs_oid.push_back(refs_value[i].value);
+      ref_here = refs_value[i].value.substr(0, oid_len);
+    }
+
+    std::string text1 = "  \"" + name_here + "\" [shape=\"record\"];\n";
+    std::string text2 = "  \"" + name_here + "\" -> \"" + ref_here + "\";\n";
     DOT::add_text(&cmt_ctx, text1);
     DOT::add_text(&cmt_ctx, text2);
   }
@@ -240,7 +251,7 @@ void k()
     if (ctx.parent != "")
     {
       std::cout << " " << ctx.parent << std::endl;
-      std::string text = "  \"" + cmt_oid.substr(0, 6) + "\" -> \"" + ctx.parent.substr(0, 6) + "\";\n";
+      std::string text = "  \"" + cmt_oid.substr(0, 6) + "\" -> \"" + ctx.parent.substr(0, oid_len) + "\";\n";
       DOT::add_text(&cmt_ctx, text);
     }
   }

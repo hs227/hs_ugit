@@ -46,29 +46,33 @@ namespace DATA
   {
     std::string path = ref;
 
-    if (!std::filesystem::exists(path))
-    {
-      return gri_res();
-    }
-    // ref 存在
-    std::ifstream in(path, std::ios::binary);
-    if (!in.is_open())
-    {
-      std::cout << "get_ref failed\n";
-      return gri_res();
-    }
-    std::string data;
-    in >> data;
-    in.close();
+    std::string content;
 
-    // if refs then need recur and finally get oid back
-    if (data.find("ref: ") == 0)
-    {
-      std::string ref_name = data.substr(5);//ref_name is full path
-      return get_ref_internal(ref_name);
+    if(std::filesystem::exists(path)){
+      // ref 存在
+      std::ifstream in(path, std::ios::binary | std::ios::ate);
+      if (!in.is_open())
+      {
+        std::cout << "get_ref failed\n";
+        return gri_res();
+      }
+      size_t content_len=in.tellg();
+      in.seekg(0);
+      content.resize(content_len);
+      in.read(content.data(),content.size());
+      in.close();
     }
 
-    return gri_res(path,RefValue(false,data));
+    bool symbolic=!content.empty()&&
+      content.find("ref:")==0;
+    if(symbolic){
+      content = DATA::LAB_GIT_DIR + "/" + content.substr(5);
+      // still need to recur deeper
+      if (deref){
+        return get_ref_internal(content,true);
+      }
+    }
+    return gri_res(path, RefValue(symbolic, content));
   }
 
   // create the reference
@@ -76,21 +80,27 @@ namespace DATA
   // side:set the ref(HEAD or tags)
   void update_ref(const std::string &ref, const RefValue &value,bool deref)
   {
-    std::string path=ref;
+    std::string path=get_ref_internal(ref,deref).path;
     if(path==""){
       std::cout<<"update_ref path failed. \n";
       return;
     }
-    
+
+    std::string out_data;
+    if (value.is_symbolic){
+      out_data = "ref: " + value.value;
+    }else{
+      out_data = value.value;
+    }
+
     std::filesystem::create_directories(std::filesystem::path(path).parent_path());
-    
     std::ofstream out(path,std::ios::binary);
     if(!out.is_open()){
       std::cout<<"update_ref: outfile open failed\n";
       return;
     }
 
-    out.write(value.value.data(),value.value.size());
+    out.write(out_data.data(), out_data.size());
     out.close();
     return;
   }
@@ -176,7 +186,7 @@ namespace DATA
   // get all the refs` name and refs` oid
   // in: deref
   // output: ref_name,ref_oid
-  void iter_refs(std::vector<std::string> &ref_name, std::vector<std::string> &ref_oid, bool deref)
+  void iter_refs(std::vector<std::string> &ref_name, std::vector<RefValue> &ref_value, bool deref)
   {
     std::vector<std::string> refs;
     refs.push_back(LAB_GIT_DIR + "/" + "HEAD");
@@ -186,7 +196,7 @@ namespace DATA
 
     for(const auto& refname:refs){
       ref_name.push_back(refname);// name
-      ref_oid.push_back(get_ref(refname).value);// oid
+      ref_value.push_back(get_ref(refname,deref));// value
     }
 
   }

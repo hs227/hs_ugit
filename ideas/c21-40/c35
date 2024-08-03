@@ -1,0 +1,14 @@
+data: Write symbolic refs
+from: https://www.leshenko.net/p/ugit/#write-symbolic-refs
+
+
+from: Nikita
+ We will add code to update_ref that can write a symbolic value.
+
+
+ 
+
+from: leaving_knife
+  in this section,ref is running.
+
+
