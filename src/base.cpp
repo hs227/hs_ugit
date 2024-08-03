@@ -226,14 +226,14 @@ namespace BASE
   // out:oid
   std::string get_oid(const std::string& name)
   {
-    std::string might_oid = get_ref_path(name);
-    if (might_oid == "")
+    std::string refname = get_ref_path(name);
+    if (refname == "")
     {
       // name is oid
       return name;
     }
     // name is ref
-    return might_oid;
+    return DATA::get_ref(refname, true).value;
   }
   // in: set of refs` oid
   // out: visited commits` oid
@@ -281,5 +281,13 @@ namespace BASE
     // set the HEAD
     DATA::update_ref(DATA::HEAD_PATH,DATA::RefValue(true,"refs/heads/master"));
     
+  }
+
+  std::vector<std::string> iter_branch_names(void)
+  {
+    std::vector<std::string> branch_names;
+    std::vector<DATA::RefValue> branch_values;
+    DATA::iter_refs(branch_names,branch_values,"heads");
+    return branch_names;
   }
 }

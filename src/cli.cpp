@@ -172,17 +172,38 @@ void commit(const std::string &args)
 
 void log(const std::string &args)
 {
-  std::string oid=args;
-  std::vector<std::string> oids;
-  oids.push_back(oid);
+  std::string root_oid=args;
+
+
+  // get all refs
+  std::vector<std::string> ref_names;
+  std::vector<DATA::RefValue> ref_values;
+  DATA::iter_refs(ref_names, ref_values);
 
   // get all commits` oid
+  std::vector<std::string> oids;
+  oids.push_back(root_oid);
   std::vector<std::string> commits = BASE::iter_commits_and_parents(oids);
+  
   for (const auto &cmt_oid : commits)
   {
     // oid -> Commit
     BASE::commit_ctx ctx = BASE::get_commit(cmt_oid);
-    std::cout<<"commit "<<cmt_oid<<"\n";
+  
+    std::cout<<"commit "<<cmt_oid<<" (";
+    // print refs
+    for(size_t i=0;i<ref_values.size();){
+      if(ref_values[i].value==cmt_oid){
+        std::string tmp=std::filesystem::path(ref_names[i]).filename().string();
+        std::cout<<((i==0)?"  ":", ")<<tmp;
+        ++i;
+      }else{
+        ref_names.erase(ref_names.begin()+i);
+        ref_values.erase(ref_values.begin()+i);
+      }
+    }
+    std::cout<<")\n";
+
     std::cout<<"tree "<<ctx.tree<<"\n";
     if (ctx.parent != "")
       std::cout << "parent " << ctx.parent << std::endl;

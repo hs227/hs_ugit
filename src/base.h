@@ -31,6 +31,7 @@ namespace BASE
   void create_branch(const std::string& name,const std::string& oid);
   bool is_branch(const std::string&);
   void init();
+  std::vector<std::string> iter_branch_names();
 }
 
 #endif
