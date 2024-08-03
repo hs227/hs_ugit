@@ -8,6 +8,9 @@
 int parse_args(int argc, char *argv[]);
 // argument modify
 void modifier_name(std::string&,std::string="HEAD");
+// other
+void print_commit(const std::string &commit_oid, BASE::commit_ctx &ctx,
+                  std::vector<std::string> &ref_names, std::vector<DATA::RefValue> &ref_values);
 // subcommand
 void init();
 void hash_object(const std::string &);
@@ -22,6 +25,7 @@ void k();
 void branch(const std::string&,const std::string&);
 void status();
 void reset(const std::string &);
+void show(const std::string &);
 
 int main(int argc, char *argv[])
 {
@@ -100,7 +104,8 @@ int parse_args(int argc, char *argv[])
 
   // git k
   CLI::App *sc_k=app.add_subcommand("k","visualization tool");
-  sc_k->callback([&](){k();});
+  sc_k->callback([&](){
+    k();});
 
 
   // git branch
@@ -121,9 +126,14 @@ int parse_args(int argc, char *argv[])
   sc_reset->add_option("oid", input_file, "specify a oid rather than HEAD")->required();
   sc_reset->callback([&](){
     modifier_name(input_file);
-    reset(input_file);
-  });
+    reset(input_file);});
 
+  // git show
+  CLI::App*sc_show=app.add_subcommand("show","show the diff");
+  sc_show->add_option("oid", input_file, "specify a oid rather than HEAD");
+  sc_show->callback([&](){
+    modifier_name(input_file);
+    show(input_file); });
 
   CLI11_PARSE(app, argc, argv);
 
@@ -141,6 +151,32 @@ void modifier_name(std::string &input, std::string default_)
   std::string oid=BASE::get_oid(input);
   input=oid;
 }
+
+void print_commit(const std::string &cmt_oid, BASE::commit_ctx &ctx,
+                  std::vector<std::string> &ref_names, std::vector<DATA::RefValue> &ref_values)
+{
+  std::cout << "commit " << cmt_oid << " (";
+  // print refs
+  for (size_t i = 0; i < ref_values.size();)
+  {
+    if (ref_values[i].value == cmt_oid){
+      std::string tmp = std::filesystem::path(ref_names[i]).filename().string();
+      std::cout << ((i == 0) ? "" : ", ") << tmp;
+      ++i;
+    }else{
+      ref_names.erase(ref_names.begin() + i);
+      ref_values.erase(ref_values.begin() + i);
+    }
+  }
+  std::cout << ")\n";
+
+  std::cout << "tree " << ctx.tree << "\n";
+  if (ctx.parent != "")
+    std::cout << "parent " << ctx.parent << std::endl;
+  std::cout << " " << ctx.msg << "\n";
+  std::cout << std::endl;
+}
+
 
 void init()
 {
@@ -198,26 +234,7 @@ void log(const std::string &args)
   {
     // oid -> Commit
     BASE::commit_ctx ctx = BASE::get_commit(cmt_oid);
-  
-    std::cout<<"commit "<<cmt_oid<<" (";
-    // print refs
-    for(size_t i=0;i<ref_values.size();){
-      if(ref_values[i].value==cmt_oid){
-        std::string tmp=std::filesystem::path(ref_names[i]).filename().string();
-        std::cout<<((i==0)?"  ":", ")<<tmp;
-        ++i;
-      }else{
-        ref_names.erase(ref_names.begin()+i);
-        ref_values.erase(ref_values.begin()+i);
-      }
-    }
-    std::cout<<")\n";
-
-    std::cout<<"tree "<<ctx.tree<<"\n";
-    if (ctx.parent != "")
-      std::cout << "parent " << ctx.parent << std::endl;
-    std::cout<<" "<<ctx.msg<<"\n";
-    std::cout<<std::endl;
+    print_commit(cmt_oid,ctx,ref_names,ref_values);
   }
 
 }
@@ -358,3 +375,22 @@ void reset(const std::string & args)
   std::string value = args;
   BASE::reset(value);
 }
+
+void show(const std::string &args)
+{
+  std::string cmt_oid = args;
+  if (cmt_oid == "")
+    return;
+
+  // get all refs
+  std::vector<std::string> ref_names;
+  std::vector<DATA::RefValue> ref_values;
+  DATA::iter_refs(ref_names, ref_values);
+
+  BASE::commit_ctx ctx = BASE::get_commit(cmt_oid);
+  print_commit(cmt_oid, ctx, ref_names, ref_values);
+
+}
+
+
+

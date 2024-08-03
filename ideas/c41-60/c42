@@ -1,0 +1,8 @@
+show: Print commit message
+from: https://www.leshenko.net/p/ugit/#show-commit-message
+
+
+from: Nikita
+seeing diffs is important
+'ugit show' CLI command which will print a commit object for us in a useful way - the commit message and the textual diff from the last commit.
+In ugit, ugit show will just work for commit objects, to simplify the code
