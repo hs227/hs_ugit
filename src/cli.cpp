@@ -128,7 +128,7 @@ void modifier_name(std::string &input, std::string default_)
 
 void init()
 {
-  DATA::init();
+  BASE::init();
 }
 
 void hash_object(const std::string &args)

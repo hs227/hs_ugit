@@ -1,0 +1,8 @@
+init: Set HEAD to master on init
+from: https://www.leshenko.net/p/ugit/#init-head-to-master
+
+from:Nikita
+As you remember, data.py handles everything that directly touches the disk (object database and refs) and base.py handles the higher-level concepts built on top of data.py. 
+Because "setting an initial branch" is a higher-level concept, its initialization belongs in base.py.
+
+

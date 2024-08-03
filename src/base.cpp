@@ -274,4 +274,12 @@ namespace BASE
     std::string path = DATA::LAB_GIT_DIR + "/" + "refs/heads/" + branchname;
     return !DATA::get_ref(path).value.empty();
   }
+
+  void init()
+  {
+    DATA::init();
+    // set the HEAD
+    DATA::update_ref(DATA::HEAD_PATH,DATA::RefValue(true,"refs/heads/master"));
+    
+  }
 }
