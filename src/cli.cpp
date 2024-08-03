@@ -21,6 +21,7 @@ void tag(const std::string&,const std::string&);
 void k();
 void branch(const std::string&,const std::string&);
 void status();
+void reset(const std::string &);
 
 int main(int argc, char *argv[])
 {
@@ -114,6 +115,14 @@ int parse_args(int argc, char *argv[])
   CLI::App *sc_status=app.add_subcommand("status","print information");
   sc_status->callback([&](){
     status();});
+
+  // git reset
+  CLI::App *sc_reset=app.add_subcommand("reset","reset HEAD deref");
+  sc_reset->add_option("oid", input_file, "specify a oid rather than HEAD")->required();
+  sc_reset->callback([&](){
+    modifier_name(input_file);
+    reset(input_file);
+  });
 
 
   CLI11_PARSE(app, argc, argv);
@@ -342,4 +351,10 @@ void status()
     printf("HEAD detached at :%s\n",head_value.value.c_str());
   }
   
+}
+
+void reset(const std::string & args)
+{
+  std::string value = args;
+  BASE::reset(value);
 }

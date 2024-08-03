@@ -1,0 +1,13 @@
+reset: Move HEAD
+from: https://www.leshenko.net/p/ugit/#reset-move-head
+
+from:Nikita
+'checkout':moves the HEAD without dereferencing it (by passing deref=False)
+'reset':move with the branch(derefer) (by passing deref=True)
+
+
+
+
+
+
+

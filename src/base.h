@@ -32,6 +32,7 @@ namespace BASE
   bool is_branch(const std::string&);
   void init();
   std::vector<std::string> iter_branch_names();
+  void reset(const std::string&);
 }
 
 #endif

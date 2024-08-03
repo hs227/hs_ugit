@@ -125,12 +125,11 @@ namespace BASE
   std::string commit(const std::string &msg)
   {
     std::string commit_data = "tree " + write_tree(DATA::CUR_DIR + "/") + "\n";
-    std::string head_path=DATA::HEAD_PATH;
+    std::string head_path = DATA::HEAD_PATH;
     DATA::RefValue head_value = DATA::get_ref(head_path, false);
 
-
     // parent commit
-    std::string parent_oid=DATA::get_ref(head_path).value;
+    std::string parent_oid = DATA::get_ref(head_path).value;
     if (parent_oid != "")
       commit_data += "parent " + parent_oid + "\n";
 
@@ -138,11 +137,14 @@ namespace BASE
     commit_data += msg + "\n";
     std::string commit_oid = DATA::hash_object(commit_data, "commit");
 
-    if(head_value.is_symbolic){
-      std::string deref_path=DATA::LAB_GIT_DIR+"/"+head_value.value;
-      DATA::update_ref(deref_path,DATA::RefValue(false,commit_oid));
-    }else{
-      DATA::update_ref(head_path,DATA::RefValue(false,commit_oid));
+    if (head_value.is_symbolic)
+    {
+      std::string deref_path = DATA::LAB_GIT_DIR + "/" + head_value.value;
+      DATA::update_ref(deref_path, DATA::RefValue(false, commit_oid));
+    }
+    else
+    {
+      DATA::update_ref(head_path, DATA::RefValue(false, commit_oid));
     }
     return commit_oid;
   }
@@ -157,13 +159,19 @@ namespace BASE
       return commit_ctx();
     std::stringstream ss(commit_data);
     std::string tag;
-    while (ss){
+    while (ss)
+    {
       ss >> tag;
-      if (tag == "tree"){
+      if (tag == "tree")
+      {
         ss >> res.tree;
-      }else if (tag == "parent") {
+      }
+      else if (tag == "parent")
+      {
         ss >> res.parent;
-      }else{
+      }
+      else
+      {
         res.msg = tag;
         break;
       }
@@ -184,21 +192,24 @@ namespace BASE
     // set HEAD
     std::string head_path = DATA::LAB_GIT_DIR + "/" + "HEAD";
     DATA::RefValue head_value;
-    if (is_branch(value)){
+    if (is_branch(value))
+    {
       head_value = DATA::RefValue(true, "refs/heads/" + value);
-    }else{
-      head_value=DATA::RefValue(false,commit_oid);
+    }
+    else
+    {
+      head_value = DATA::RefValue(false, commit_oid);
     }
 
-    DATA::update_ref(head_path, head_value,false);
+    DATA::update_ref(head_path, head_value, false);
   }
   // create a ref called tag
   // in: refname,oid
   // side:create a tag in 'refs/tags/'
-  void create_tag(const std::string & refname, const std::string & oid)
+  void create_tag(const std::string &refname, const std::string &oid)
   {
-    std::string tag_path=DATA::LAB_GIT_DIR+"/refs/tags/"+refname;
-    DATA::update_ref(tag_path,DATA::RefValue(false,oid));
+    std::string tag_path = DATA::LAB_GIT_DIR + "/refs/tags/" + refname;
+    DATA::update_ref(tag_path, DATA::RefValue(false, oid));
   }
 
   // get the intact_refname (the intact ref_path)
@@ -214,9 +225,9 @@ namespace BASE
 
     for (const auto &str : refs_to_try)
     {
-      std::string intact_refname = DATA::get_ref(str,false).value;
-      if (intact_refname != "")
-        return intact_refname;
+      std::string value = DATA::get_ref(str, false).value;
+      if (value != "")
+        return str;
     }
     // failed
     return "";
@@ -224,7 +235,7 @@ namespace BASE
 
   // in: name(oid or ref)
   // out:oid
-  std::string get_oid(const std::string& name)
+  std::string get_oid(const std::string &name)
   {
     std::string refname = get_ref_path(name);
     if (refname == "")
@@ -242,18 +253,19 @@ namespace BASE
     std::set<std::string> ref_oids;
     std::set<std::string> visited;
     std::vector<std::string> res;
-    
+
     // ref_oids init
-    ref_oids.insert(ref_oids_.begin(),ref_oids_.end());
+    ref_oids.insert(ref_oids_.begin(), ref_oids_.end());
     // refs->commits
-    while(!ref_oids.empty()){
-      std::string oid=*ref_oids.begin();
+    while (!ref_oids.empty())
+    {
+      std::string oid = *ref_oids.begin();
       ref_oids.erase(ref_oids.begin());
-      if(oid==""||visited.count(oid)>0)
+      if (oid == "" || visited.count(oid) > 0)
         continue;
       visited.insert(oid);
       res.push_back(oid);
-      
+
       commit_ctx ctx = get_commit(oid);
       ref_oids.insert(ctx.parent);
     }
@@ -266,7 +278,7 @@ namespace BASE
   {
     std::string path = DATA::LAB_GIT_DIR + "/" + "refs/heads/" + branchname;
 
-    DATA::update_ref(path,DATA::RefValue(false,oid));
+    DATA::update_ref(path, DATA::RefValue(false, oid));
   }
 
   bool is_branch(const std::string &branchname)
@@ -279,15 +291,36 @@ namespace BASE
   {
     DATA::init();
     // set the HEAD
-    DATA::update_ref(DATA::HEAD_PATH,DATA::RefValue(true,"refs/heads/master"));
-    
+    DATA::update_ref(DATA::HEAD_PATH, DATA::RefValue(true, "refs/heads/master"));
   }
 
   std::vector<std::string> iter_branch_names(void)
   {
     std::vector<std::string> branch_names;
     std::vector<DATA::RefValue> branch_values;
-    DATA::iter_refs(branch_names,branch_values,"heads");
+    DATA::iter_refs(branch_names, branch_values, "heads");
     return branch_names;
+  }
+  // in:value(name or oid)
+  void reset(const std::string &value)
+  {
+    std::string commit_oid = get_oid(value);
+    // workshop flush
+    commit_ctx cxt = get_commit(commit_oid);
+    if (cxt.tree == "")
+      return;
+    std::string &tree_oid = cxt.tree;
+    read_tree(tree_oid);
+
+    // set HEAD
+    std::string head_path = DATA::LAB_GIT_DIR + "/" + "HEAD";
+    DATA::RefValue head_value;
+    if (is_branch(value)){
+      head_value = DATA::RefValue(true, "refs/heads/" + value);
+    }else{
+      head_value = DATA::RefValue(false, commit_oid);
+    }
+
+    DATA::update_ref(head_path, head_value, true);
   }
 }
