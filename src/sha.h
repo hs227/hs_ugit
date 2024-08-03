@@ -8,7 +8,6 @@ namespace SHA
 {
   std::string hash_str(const std::string &in);
   std::string hash_file(const std::string &filename);
-
 }
 
 #endif

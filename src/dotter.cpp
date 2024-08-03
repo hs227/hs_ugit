@@ -10,7 +10,7 @@ namespace DOT
     if(ctx==NULL){
       return -1;
     }
-    ctx->bigraph_name=commit_name;
+    ctx->digraph_name = commit_name;
     ctx->oid_nodes.resize(0);
     ctx->ref_nodes.resize(0);
     ctx->lines.resize(0);
@@ -137,7 +137,7 @@ namespace DOT
   static std::string build_dot_m2(dot_ctx* ctx)
   {
     std::string buf;
-    buf="digraph "+ctx->bigraph_name+"{\n";
+    buf = "digraph " + ctx->digraph_name + "{\n";
     // buf+="  HEAD;\n";
     // buf+="  HEAD -> oid1;\n";
     // buf+="  oid1 -> oid2;\n";

@@ -118,14 +118,15 @@ int parse_args(int argc, char *argv[])
 void modifier_name(std::string &input, std::string default_)
 { 
   // oid/ref ->oid
+  
   if(input==""){
     if(default_=="")
       return;
     input=default_;
   }
 
-  std::string res=BASE::get_oid(input);
-  input=res;
+  std::string oid=BASE::get_oid(input);
+  input=oid;
 }
 
 void init()
@@ -135,8 +136,8 @@ void init()
 
 void hash_object(const std::string &args)
 {
-  std::string file = args;
-  std::string oid = DATA::hash_object(file);
+  std::string filepath = args;
+  std::string oid = DATA::hash_object(filepath);
   std::cout << "hash-object finished: " << oid << std::endl;
 }
 
@@ -167,7 +168,6 @@ void commit(const std::string &args)
 
 void log(const std::string &args)
 {
-//  std::string oid = args != "" ? args : BASE::get_oid("HEAD");
   std::string oid=args;
   std::vector<std::string> oids;
   oids.push_back(oid);
@@ -196,7 +196,6 @@ void checkout(const std::string &args)
 
 void tag(const std::string & arg_name, const std::string & arg_oid)
 {
-  //std::string oid=arg_oid!=""?arg_oid:BASE::get_oid("HEAD");
   std::string oid=arg_oid;
 
   if(arg_name.find('/')!=std::string::npos){

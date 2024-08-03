@@ -1,0 +1,15 @@
+data: Don't always dereference refs (for `ugit k`)
+from:https://www.leshenko.net/p/ugit/#make-dereference-optional
+
+
+from:Nikita
+final_oid or symbolic_ref all needed
+Or we would like to update a ref directly, rather then updating the last ref in the chain.
+
+deref in get_ref,iter_refs,update_ref,get_ref_internal
+
+
+
+from:leaving_knife
+本章主要增加了注释，删除了部分冗余代码，实际运行由下一章完成。
+

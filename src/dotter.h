@@ -9,7 +9,7 @@
 
 namespace DOT{
 
-  // bigraph_line for dot_ctx
+  // digraph_line for dot_ctx
   struct dc_line{
     std::string* from;
     std::string* to;
@@ -19,7 +19,7 @@ namespace DOT{
   // context
   struct dot_ctx
   {
-    std::string bigraph_name;// graph name
+    std::string digraph_name; // graph name
     // mode 1 create realtime
     std::vector<std::string> oid_nodes;// oids examples:oid/oid_name
     std::vector<std::string> ref_nodes;// ref examples:ref/ref_name

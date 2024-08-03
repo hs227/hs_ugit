@@ -11,7 +11,9 @@
 
 namespace DATA
 {
-
+  // create the repository file
+  // 1. '.ugit/'
+  // 2. '.ugit/objects/'
   void init()
   {
     // .ugit
@@ -40,7 +42,7 @@ namespace DATA
 
   // in: ref_path
   // out: RefValue(false,oid)
-  gri_res get_ref_internal(const std::string &ref)
+  gri_res get_ref_internal(const std::string &ref, bool deref = true)
   {
     std::string path = ref;
 
@@ -62,8 +64,7 @@ namespace DATA
     // if refs then need recur and finally get oid back
     if (data.find("ref: ") == 0)
     {
-      std::string ref_name = data.substr(5);
-      ref_name = BASE::get_ref_path(ref_name);
+      std::string ref_name = data.substr(5);//ref_name is full path
       return get_ref_internal(ref_name);
     }
 
@@ -71,9 +72,9 @@ namespace DATA
   }
 
   // create the reference
-  // in:ref_name,refValue
+  // in:ref_name,refValue,deref(if deref)
   // side:set the ref(HEAD or tags)
-  void update_ref(const std::string &ref, const RefValue &value)
+  void update_ref(const std::string &ref, const RefValue &value,bool deref)
   {
     std::string path=ref;
     if(path==""){
@@ -94,16 +95,13 @@ namespace DATA
     return;
   }
 
-
-
   // ref->oid
   // in: ref
   // out:RefValue::oid
-  RefValue get_ref(const std::string &ref)
+  RefValue get_ref(const std::string &ref, bool deref)
   {
-    return get_ref_internal(ref).value;
+    return get_ref_internal(ref,deref).value;
   }
-
 
   // in:content,type
   // out:oid
@@ -176,8 +174,9 @@ namespace DATA
     return content;
   }
   // get all the refs` name and refs` oid
-  // in: input is output
-  void iter_refs(std::vector<std::string> &ref_name, std::vector<std::string> &ref_oid)
+  // in: deref
+  // output: ref_name,ref_oid
+  void iter_refs(std::vector<std::string> &ref_name, std::vector<std::string> &ref_oid, bool deref)
   {
     std::vector<std::string> refs;
     refs.push_back(LAB_GIT_DIR + "/" + "HEAD");

@@ -8,25 +8,17 @@
 
 namespace BASE
 {
-
+  // in: dir_path
+  // out: tree_object_oid
   std::string write_tree(std::string directory)
   {
     // 遍历目录
-
-    // structure version
-    // std::string oid;
-    // iter_files(directory,
-    //            file_nothing, file_nothing,
-    //            is_ignore,
-    //            file_hash, file_entries_e,
-    //            (void*)&oid);
-    // return oid;
-
     // compact version
     std::string oid = write_tree_compact(directory);
     return oid;
   }
 
+  // clean the dir`s files
   void empty_current_directory(const std::string &path = DATA::CUR_DIR)
   {
     for (const auto &entry : std::filesystem::directory_iterator(path))
@@ -50,10 +42,11 @@ namespace BASE
       }
     }
   }
-
-  void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree)
+  // in: tree_oid
+  // out:entries
+  void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree_oid)
   {
-    std::string content = DATA::get_object(tree, "tree");
+    std::string content = DATA::get_object(tree_oid, "tree");
     std::stringstream ss(content);
 
     while (!ss.eof())
@@ -66,14 +59,16 @@ namespace BASE
         entries.insert({type, oid, name});
     }
   }
-
+  // get all the blob in tree_object
+  // in:tree_oid,base_path(for recur)
+  // out:results
   void get_tree(std::set<gt_iter_node> &results,
-                const std::string &oid,
+                const std::string &tree_oid,
                 const std::string &base_path = "")
   {
     results.clear();
     std::set<wt_iter_node> entries;
-    iter_tree_entries(entries, oid);
+    iter_tree_entries(entries, tree_oid);
 
     for (const auto &entry : entries)
     {
@@ -93,15 +88,17 @@ namespace BASE
       }
     }
   }
-
-  void read_tree(const std::string &oid)
+  // fill the workshop by the files in tree
+  // in: tree_oid
+  // side: workshop flush
+  void read_tree(const std::string &tree_oid)
   {
     empty_current_directory();
 
     std::set<gt_iter_node> entries;
-    get_tree(entries, oid); // get all blob in tree
+    get_tree(entries, tree_oid); // get all blob in tree
     std::string cur_path = DATA::CUR_DIR;
-
+    // iterate the tree and create each file
     for (const auto &entry : entries)
     {
       std::cout << entry.src << " -> " << entry.dst << std::endl;
@@ -122,7 +119,9 @@ namespace BASE
       out.close();
     }
   }
-
+  // commit with msg
+  // in:msg(comment)
+  // out: commit_object_oid
   std::string commit(const std::string &msg)
   {
     std::string commit_data = "tree " + write_tree(DATA::CUR_DIR + "/") + "\n";
@@ -140,9 +139,11 @@ namespace BASE
     return oid;
   }
   // oid -> commit_ctx
-  commit_ctx get_commit(const std::string &oid)
+  // in: commit_oid
+  // out: commit_ctx
+  commit_ctx get_commit(const std::string &commit_oid)
   {
-    std::string commit_data = DATA::get_object(oid, "commit");
+    std::string commit_data = DATA::get_object(commit_oid, "commit");
     commit_ctx res;
     if (commit_data == "")
       return commit_ctx();
@@ -161,10 +162,10 @@ namespace BASE
     }
     return res;
   }
-
+  // in:commit_oid
   void checkout(const std::string &commit_oid)
   {
-    // restore workshop
+    // workshop flush
     commit_ctx cxt = get_commit(commit_oid);
     if (cxt.tree == "")
       return;
@@ -175,27 +176,31 @@ namespace BASE
     std::string head_path = DATA::LAB_GIT_DIR + "/" + "HEAD";
     DATA::update_ref(head_path, DATA::RefValue(false,commit_oid));
   }
-
-  void create_tag(const std::string & name, const std::string & oid)
+  // create a ref called tag
+  // in: refname,oid
+  // side:create a tag in 'refs/tags/'
+  void create_tag(const std::string & refname, const std::string & oid)
   {
-    std::string tag_path=DATA::LAB_GIT_DIR+"/refs/tags/"+name;
+    std::string tag_path=DATA::LAB_GIT_DIR+"/refs/tags/"+refname;
     DATA::update_ref(tag_path,DATA::RefValue(false,oid));
   }
 
-  // get the ref path
-  std::string get_ref_path(const std::string &name)
+  // get the intact_refname (the intact ref_path)
+  // in: refname
+  // out: intact_refname
+  std::string get_ref_path(const std::string &refname)
   {
     std::vector<std::string> refs_to_try;
-    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/" + name);
-    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/" + name);
-    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/tags/" + name);
-    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/heads/" + name);
+    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/" + refname);
+    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/" + refname);
+    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/tags/" + refname);
+    refs_to_try.push_back(DATA::LAB_GIT_DIR + "/refs/heads/" + refname);
 
     for (const auto &str : refs_to_try)
     {
-      std::string res = DATA::get_ref(str).value;
-      if (res != "")
-        return res;
+      std::string intact_refname = DATA::get_ref(str).value;
+      if (intact_refname != "")
+        return intact_refname;
     }
     // failed
     return "";
@@ -238,11 +243,13 @@ namespace BASE
     }
     return res;
   }
-
-  void create_branch(const std::string &name, const std::string &oid)
+  // create a ref called branch
+  // in: branchname,oid
+  // side: create a branch in 'refs/heads/'
+  void create_branch(const std::string &branchname, const std::string &oid)
   {
-    std::string path=DATA::LAB_GIT_DIR+"/"+"refs/heads/"+name;
-    
+    std::string path = DATA::LAB_GIT_DIR + "/" + "refs/heads/" + branchname;
+
     DATA::update_ref(path,DATA::RefValue(false,oid));
   }
 }
