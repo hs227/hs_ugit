@@ -84,9 +84,8 @@ int parse_args(int argc, char *argv[])
 
   // git checkout
   CLI::App *sc_checkout=app.add_subcommand("checkout","read_tree+set_HEAD");
-  sc_checkout->add_option("oid",input_file,"chose commit")->required();
+  sc_checkout->add_option("refvalue",input_file,"branch or commit_oid")->required();
   sc_checkout->callback([&](){
-    modifier_name(input_file);
     checkout(input_file);});
   
   // git tag
@@ -188,8 +187,8 @@ void log(const std::string &args)
 
 void checkout(const std::string &args)
 { 
-  std::string oid=args;
-  BASE::checkout(oid);
+  std::string value=args;
+  BASE::checkout(value);
 }
 
 void tag(const std::string & arg_name, const std::string & arg_oid)

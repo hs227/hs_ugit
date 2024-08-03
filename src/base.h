@@ -29,6 +29,7 @@ namespace BASE
   std::string get_oid(const std::string &);
   std::vector<std::string> iter_commits_and_parents(const std::vector<std::string> &);
   void create_branch(const std::string& name,const std::string& oid);
+  bool is_branch(const std::string&);
 }
 
 #endif

@@ -1,0 +1,11 @@
+checkout: Switch branches
+from: https://www.leshenko.net/p/ugit/#checkout-switch-branches
+
+
+
+from: Nikita
+After this change, if we checkout a branch, we will point HEAD to the ref of that branch (making HEAD symbolic). If we check out anything else (such as a tag or an OID directly), we'll just point HEAD directly at the commit OID (making HEAD non-symbolic).
+
+from: leaving_knife
+now, HEAD could point to a "branch" or just a "commit"_oid.
+in here, HEAD can`t point to a "tag".
