@@ -1,0 +1,19 @@
+show: List changed files in commit
+from: https://www.leshenko.net/p/ugit/#show-changed-files
+
+
+from:Nikita
+We will compare the tree of the commit to the tree of its parent commit.
+'diff.py':deals with computing differences between objects
+'diff.compare_trees()':will take a list of trees and will return them grouped by filename.
+'diff.diff_trees()':takes two trees, compares them and return all entries that have different OIDs.
+Then what is left is to call diff_trees() from show with the correct trees (of the commit we want to show and its parent).
+
+
+
+
+
+
+
+
+

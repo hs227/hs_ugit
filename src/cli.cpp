@@ -4,6 +4,7 @@
 #include "data.h"
 #include "base.h"
 #include "dotter.h"
+#include "diff.h"
 
 int parse_args(int argc, char *argv[]);
 // argument modify
@@ -389,6 +390,12 @@ void show(const std::string &args)
 
   BASE::commit_ctx ctx = BASE::get_commit(cmt_oid);
   print_commit(cmt_oid, ctx, ref_names, ref_values);
+
+  if(!ctx.parent.empty()){
+    BASE::commit_ctx parent_ctx=BASE::get_commit(ctx.parent);
+    std::string diff_info=DIFF::diff_trees(parent_ctx.tree,ctx.tree); 
+    std::cout<<diff_info<<std::endl;   
+  }
 
 }
 

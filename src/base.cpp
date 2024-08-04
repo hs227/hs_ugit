@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include<functional>
 
 #include "data.h"
 #include "base_other.h"
@@ -59,12 +60,13 @@ namespace BASE
         entries.insert({type, oid, name});
     }
   }
+
   // get all the blob in tree_object
   // in:tree_oid,base_path(for recur)
   // out:results
   void get_tree(std::set<gt_iter_node> &results,
                 const std::string &tree_oid,
-                const std::string &base_path = "")
+                const std::string &base_path)
   {
     results.clear();
     std::set<wt_iter_node> entries;

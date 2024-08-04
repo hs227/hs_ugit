@@ -7,31 +7,8 @@
 
 #include "data.h"
 
-// write_tree_iter_node
-// tree`s entry
-struct wt_iter_node
-{
-  std::string type;
-  std::string oid;
-  std::string name;
 
-  bool operator<(const wt_iter_node &rhs) const
-  {
-    return name.compare(rhs.name) <= 0;
-  }
-};
-// get_tree_iter_node
-// the link between object and file
-struct gt_iter_node
-{
-  std::string src;// oid in objects
-  std::string dst;// path in workshop
 
-  bool operator<(const gt_iter_node& rhs) const
-  {
-    return dst.compare(rhs.dst)<=0;
-  }
-};
 // ignore the specific files when iterate the workshop
 inline static bool is_ignore(void *entry_)
 {
@@ -45,9 +22,10 @@ inline static bool is_ignore(void *entry_)
 // iterate the workshop`s files to write a 'tree' object
 // in: dir_path
 // out: 'tree'_object`s oid
+// side: create a tree_object
 static inline std::string write_tree_compact(const std::string &path)
 {
-  std::set<wt_iter_node> entries;
+  std::set<BASE::wt_iter_node> entries;
 
 
   for(const auto& entry:std::filesystem::directory_iterator(path)){

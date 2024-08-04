@@ -19,8 +19,35 @@ namespace BASE
     {}
   };
 
+  // write_tree_iter_node
+  // tree`s entry
+  struct wt_iter_node
+  {
+    std::string type;
+    std::string oid;
+    std::string name;
+
+    bool operator<(const wt_iter_node &rhs) const {
+      return name.compare(rhs.name) <= 0;
+    }
+  };
+
+  // get_tree_iter_node
+  // the link between object and file
+  struct gt_iter_node
+  {
+    std::string src; // oid in objects
+    std::string dst; // path in workshop
+
+    bool operator<(const gt_iter_node &rhs) const{
+      return dst.compare(rhs.dst) <= 0;
+    }
+  };
+
   std::string write_tree(std::string =".");
-  void read_tree(const std::string& );
+  void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree_oid);
+  void get_tree(std::set<gt_iter_node> &results, const std::string &tree_oid, const std::string &base_path = "");
+  void read_tree(const std::string &);
   std::string commit(const std::string&);
   commit_ctx get_commit(const std::string&);
   void checkout(const std::string&);
