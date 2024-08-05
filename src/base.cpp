@@ -366,4 +366,10 @@ namespace BASE
     
     return content;
   }
+
+  void merge(const std::string& oid)
+  {
+    // TODO merge HEAD into oid
+    std::cout<<"merge plz"<<std::endl;
+  }
 }

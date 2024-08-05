@@ -28,6 +28,7 @@ void status();
 void reset(const std::string &);
 void show(const std::string &);
 void diff(const std::string&);
+void merge(const std::string&);
 
 int main(int argc, char *argv[])
 {
@@ -143,6 +144,13 @@ int parse_args(int argc, char *argv[])
   sc_diff->callback([&](){
     modifier_name(input_file);
     diff(input_file);});
+
+  // git merge
+  CLI::App* sc_merge=app.add_subcommand("merge","merge with other commit");
+  sc_merge->add_option("oid",input_file,"specify a oid rather than HEAD");
+  sc_merge->callback([&](){
+    modifier_name(input_file);
+    merge(input_file);});
 
   CLI11_PARSE(app, argc, argv);
 
@@ -437,3 +445,13 @@ void diff(const std::string & args)
   std::string diff_info = DIFF::diff_trees(cmt_tree_oid, index_tree_oid);
   std::cout<<diff_info<<std::endl;
 }
+
+void merge(const std::string& args)
+{
+  std::string oid=args;
+  BASE::merge(oid);
+}
+
+
+
+
