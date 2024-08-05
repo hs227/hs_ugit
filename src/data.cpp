@@ -20,9 +20,8 @@ namespace DATA
     if (!std::filesystem::exists(DATA::LAB_GIT_DIR)){
       // .ugit need to be created
       bool flag = std::filesystem::create_directories(DATA::LAB_GIT_DIR);
-      if (flag){
+      if (flag)
         printf("Initialized empty ugit repository in \"%s\"\n", std::filesystem::absolute(DATA::LAB_GIT_DIR).string().c_str());
-      }
     }else{
       std::cout << std::filesystem::absolute(DATA::LAB_GIT_DIR) << " already exists\n";
     }
@@ -33,9 +32,15 @@ namespace DATA
     {
       bool flag = std::filesystem::create_directory(obj_dir);
       if (!flag)
-      {
         std::cout << ".ugit/objects create failed" << std::endl;
-      }
+    }
+
+    // tmp
+    std::string tmp_dir=LAB_GIT_DIR+"/"+"tmp";
+    if(!std::filesystem::exists(tmp_dir)){
+      bool flag=std::filesystem::create_directory(tmp_dir);
+      if(!flag)
+        std::cout<<".ugit/tmp create failed"<<std::endl;
     }
   }
 

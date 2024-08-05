@@ -141,7 +141,7 @@ namespace BASE
 
     if (head_value.is_symbolic)
     {
-      std::string deref_path = DATA::LAB_GIT_DIR + "/" + head_value.value;
+      std::string deref_path = head_value.value;
       DATA::update_ref(deref_path, DATA::RefValue(false, commit_oid));
     }
     else

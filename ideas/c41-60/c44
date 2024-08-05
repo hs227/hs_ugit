@@ -1,0 +1,22 @@
+show: Print diff of commit
+from: https://www.leshenko.net/p/ugit/#show-diff
+
+from:Nikita
+Instead of just printing the changed files in a commit, let's print the actual diff (diff is the format with pluses and minuses at the beginning of the line).
+'diff_blobs()' take two blob OIDs and return the diff between them.
+'diff'(an external Unix utility) receives two files as arguments and prints the differences between them in diff format.
+We'll need to read the blobs from the object database and write them to a temporary file, which will be given to "diff" utility.
+"diff"'s output is a byte string.(passed some extra options (--unified, --show-c-function, --label))
+
+from:Comments:Manu
+difflib is a great alternative
+
+
+from:leaving_knife
+I will chose a similar tool to take place of the 'diff',so that i can still use the "PIPE".
+1.Meld or KDiff3 are GUI tool,and i don't know how to get text.
+  ->failed
+2.I try to write a difflike application in python(using difflib).
+And then i will use the PIPE to communicate with this application.
+  ->successed
+  (absolute path needed)

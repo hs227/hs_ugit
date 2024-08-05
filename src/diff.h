@@ -6,6 +6,8 @@
 #include<set>
 #include<map>
 
+#include"base.h"
+
 namespace DIFF{
   // compare_tree_node
   // 1.map_version(map=>directory(python))
@@ -29,6 +31,7 @@ namespace DIFF{
 
   std::string diff_trees(const std::string& t_from,const std::string& t_to);
   std::vector<ct_node> compare_tree(const std::vector<std::string> tree_oids);
+  std::string diff_blobs(const std::string &t_from, const std::string &t_to, std::string output_path = "../resource/python_diff/output.txt");
 }
 
 #endif

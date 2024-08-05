@@ -312,7 +312,7 @@ void k()
   // ".dot" file create
   std::cout << "\nDOT\n";
   std::string buf = DOT::build_dot(&cmt_ctx);
-  std::string file_path = DOT::dot_write_out(buf, "tmp.dot");
+  std::string file_path = DOT::dot_write_out(buf, "tmp.dot", DATA::LAB_GIT_DIR + "/tmp/graphviz");
   std::cout << buf;
 
   // subprocess(graphviz) PIPE:popen/pclose
