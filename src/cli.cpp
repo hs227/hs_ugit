@@ -376,6 +376,18 @@ void status()
   }else{
     printf("HEAD detached at :%s\n",head_value.value.c_str());
   }
+
+  //  print changed files
+  std::string head_oid=DATA::get_ref(head_path,true).value;
+  std::string head_tree_oid=BASE::get_commit(head_oid).tree;
+  //    index tree
+  std::string index=BASE::get_working_tree();
+  std::string index_tree_oid=index.substr(0,40);
+  if(index_tree_oid=="")
+    return;
+  //    diff
+  std::string diff_info = DIFF::iter_changed_file(head_tree_oid, index_tree_oid);
+  std::cout<<diff_info<<std::endl;
   
 }
 
@@ -409,17 +421,19 @@ void show(const std::string &args)
 
 void diff(const std::string & args)
 {
+  // cmt tree
   std::string cmt_oid = args;
   if (cmt_oid == "")
     return;
-  std::string index=BASE::get_working_tree();
-
   std::string cmt_tree_oid=BASE::get_commit(cmt_oid).tree;
   if(cmt_tree_oid=="")
     return;
+  // index tree
+  std::string index=BASE::get_working_tree();
   std::string index_tree_oid=index.substr(0,40);
   if(index_tree_oid=="")
     return;
+  //diff
   std::string diff_info = DIFF::diff_trees(cmt_tree_oid, index_tree_oid);
   std::cout<<diff_info<<std::endl;
 }

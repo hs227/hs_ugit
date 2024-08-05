@@ -8,13 +8,14 @@
 
 
 namespace DIFF{
-
+  // in: t_from(tree_oid),t_to(tree_oid)
+  // out: diff_content
   std::string diff_trees(const std::string &t_from, const std::string &t_to)
   {
     std::vector<std::string> tree_oids({t_from,t_to});
     std::vector<ct_node> nodes=compare_tree(tree_oids);
 
-    std::string diff_info;
+    std::string diff_content;
     
     //  diff:updated_file , new_file or deleted_file
     //    updated_file:different oid
@@ -28,6 +29,33 @@ namespace DIFF{
           ((diff_str = diff_trees_deleted_c(nodes[i])) != "")) {
         // updated or new or deleted
         //std::cout<<diff_str<<std::endl;
+        diff_content+=diff_str;
+      }else{
+        //std::cout<<"not change: "<<nodes[i].filepath<<std::endl;
+      }
+    }
+    return diff_content;
+  }
+  // a concise version of diff_trees
+  std::string iter_changed_file(const std::string &t_from, const std::string &t_to)
+  {
+    std::vector<std::string> tree_oids({t_from,t_to});
+    std::vector<ct_node> nodes=compare_tree(tree_oids);
+
+    std::string diff_info;
+    
+    //  diff:updated_file , new_file or deleted_file
+    //    updated_file:different oid
+    //    new_file:only (idx=1)_oid
+    //    deleted_file: only (idx=0)_oid
+    const size_t nodes_size=nodes.size();
+    for(size_t i=0;i<nodes_size;++i){
+      std::string diff_str;
+      if (((diff_str = diff_trees_updated_c(nodes[i],false)) != "") ||
+          ((diff_str = diff_trees_new_c(nodes[i])) != "")     ||
+          ((diff_str = diff_trees_deleted_c(nodes[i])) != "")) {
+        // updated or new or deleted
+        //std::cout<<diff_str<<std::endl;
         diff_info+=diff_str;
       }else{
         //std::cout<<"not change: "<<nodes[i].filepath<<std::endl;
@@ -35,9 +63,10 @@ namespace DIFF{
     }
     return diff_info;
   }
+
   // compare all the trees` files,to find the
   // differences that means the same path with different oid.
-  // one path means one file; different oids mean diffrent content. 
+  // one path means one file; different oids mean diffrent content.
   // in: tree_oids
   // out: diffs
   std::vector<ct_node> compare_tree(const std::vector<std::string> tree_oids)
