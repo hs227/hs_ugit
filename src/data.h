@@ -13,7 +13,8 @@ namespace DATA{
   const std::string GIT_DIR = ".ugit";
   const std::string LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
   const std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
-  const std::string HEAD_PATH=LAB_GIT_DIR+"/"+"HEAD";
+  const std::string HEAD_PATH=LAB_GIT_DIR+"/HEAD";
+  const std::string INDEX_PATH=LAB_GIT_DIR+"/index";
 
   struct RefValue
   {

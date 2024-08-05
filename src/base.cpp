@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
-#include<functional>
 
 #include "data.h"
 #include "base_other.h"
@@ -43,6 +42,7 @@ namespace BASE
       }
     }
   }
+  // not deref,no recur
   // in: tree_oid
   // out:entries
   void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree_oid)
@@ -294,6 +294,13 @@ namespace BASE
     DATA::init();
     // set the HEAD
     DATA::update_ref(DATA::HEAD_PATH, DATA::RefValue(true, "refs/heads/master"));
+    // create the index
+    std::ofstream index_file(DATA::INDEX_PATH);
+    if(!index_file.is_open()){
+      std::cout << ".ugit/index create failed" << std::endl;
+      return;
+    }
+    index_file.close();
   }
 
   std::vector<std::string> iter_branch_names(void)
@@ -324,5 +331,39 @@ namespace BASE
     }
 
     DATA::update_ref(head_path, head_value, true);
+  }
+
+  std::string get_working_tree()
+  {
+    std::string tree_oid = write_tree_compact(DATA::CUR_DIR + "/");
+    if(tree_oid=="")
+      return "";
+    std::cout<<"tree_oid: "<<tree_oid<<"\n";
+
+    //  move object -> index
+    std::string object_path=DATA::OBJECTS_DIR+"/"+tree_oid;
+    std::string index_path=DATA::INDEX_PATH;
+    std::string content;
+    //    read in  
+    std::ifstream in(object_path,std::ios::binary|std::ios::ate);
+    if(!in.is_open()){
+      std::cout<<"get_working_tree: object_file open failed\n";
+      return "";
+    }
+    content.resize(in.tellg());
+    in.seekg(0);
+    in.read(content.data(),content.size());
+    in.close();
+    content = tree_oid + "\n" + content;
+    //    write out
+    std::ofstream out(index_path,std::ios::binary|std::ios::trunc);
+    if(!out.is_open()){
+      std::cout << "get_working_tree: index_file open failed\n";
+      return "";
+    }
+    out.write(content.data(),content.size());
+    out.close();
+    
+    return content;
   }
 }

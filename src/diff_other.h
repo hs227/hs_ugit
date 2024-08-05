@@ -25,7 +25,7 @@ inline static std::string diff_trees_new_c(const DIFF::ct_node &node)
      node.oid_idx[0]==1){
       std::string new_msg;
       new_msg="new: "+node.filepath;
-      new_msg+="\n";
+      new_msg+="\n\n";
       return new_msg;
   }
   return "";
@@ -37,7 +37,7 @@ inline static std::string diff_trees_deleted_c(const DIFF::ct_node &node)
      node.oid_idx[0]==0){
       std::string deleted_msg;
       deleted_msg="deleted: "+node.filepath;
-      deleted_msg+="\n";
+      deleted_msg+="\n\n";
       return deleted_msg;
   }
   return "";

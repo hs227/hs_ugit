@@ -1,0 +1,11 @@
+diff: Compare working tree to a commit
+from:https://www.leshenko.net/p/ugit/#diff-working-tree
+
+
+from:Nikita
+'ugit diff':display what was changed in the working directory since the last commit
+'get_working_tree()':create the 'index'
+
+
+
+

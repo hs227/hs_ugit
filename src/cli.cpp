@@ -27,6 +27,7 @@ void branch(const std::string&,const std::string&);
 void status();
 void reset(const std::string &);
 void show(const std::string &);
+void diff(const std::string&);
 
 int main(int argc, char *argv[])
 {
@@ -135,6 +136,13 @@ int parse_args(int argc, char *argv[])
   sc_show->callback([&](){
     modifier_name(input_file);
     show(input_file); });
+
+  // git diff
+  CLI::App* sc_diff=app.add_subcommand("diff","diff the current tree with a commit_tree");
+  sc_diff->add_option("oid", input_file, "specify a oid rather than HEAD");
+  sc_diff->callback([&](){
+    modifier_name(input_file);
+    diff(input_file);});
 
   CLI11_PARSE(app, argc, argv);
 
@@ -399,5 +407,19 @@ void show(const std::string &args)
 
 }
 
+void diff(const std::string & args)
+{
+  std::string cmt_oid = args;
+  if (cmt_oid == "")
+    return;
+  std::string index=BASE::get_working_tree();
 
-
+  std::string cmt_tree_oid=BASE::get_commit(cmt_oid).tree;
+  if(cmt_tree_oid=="")
+    return;
+  std::string index_tree_oid=index.substr(0,40);
+  if(index_tree_oid=="")
+    return;
+  std::string diff_info = DIFF::diff_trees(cmt_tree_oid, index_tree_oid);
+  std::cout<<diff_info<<std::endl;
+}

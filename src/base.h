@@ -60,6 +60,7 @@ namespace BASE
   void init();
   std::vector<std::string> iter_branch_names();
   void reset(const std::string&);
+  std::string get_working_tree();
 }
 
 #endif
