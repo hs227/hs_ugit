@@ -1,0 +1,27 @@
+merge: Merge in working directory
+from:https://www.leshenko.net/p/ugit/#merge-working-directory
+
+
+from: Nikita
+'base.read_tree_merged':take two trees and extract a merged version of them into the working directory.
+It just calls diff.merge_trees() and writes the resulting merged tree to the working directory.
+'diff.merge_blobs':gets two OIDs and returns their merged content.
+'diff.merge_trees':gets two trees and in turn calls diff.merge_blobs().
+
+from: leaving_knife
+{
+'py_diff' written by myself, but it doesn't good enough for later updates.
+So i try to choose another way to implement these funtions at present!!
+try1:https://github.com/duckie/difflib/tree/master
+  failed,i don`t realize how it runs or works.It maybe not the tool i want.
+try2:https://github.com/sisong/HDiffPatch?tab=readme-ov-file
+  failed,again like try1
+-> finally still keep on 'py_diff', built by 'Nuitka --onefile py_diff.py'
+}
+{
+遇到了另一件可怕的事->不同系统下，换行符的差异问题：
+  在Windows系统中，通常使用\r\n（即0D0A）作为换行符。
+  在Unix/Linux系统中，通常只使用\n（即0A）作为换行符。
+  在经典Mac OS系统中，曾经使用\r（即0D）作为换行符。
+->发现只是代码bug，该问题没有出现，已修复
+}

@@ -61,7 +61,7 @@ namespace BASE
   std::vector<std::string> iter_branch_names();
   void reset(const std::string&);
   std::string get_working_tree();
-  void merge(const std::string&);
+  void merge(const std::string& other_oid);
 }
 
 #endif

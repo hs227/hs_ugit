@@ -442,7 +442,7 @@ void diff(const std::string & args)
   if(index_tree_oid=="")
     return;
   //diff
-  std::string diff_info = DIFF::diff_trees(cmt_tree_oid, index_tree_oid);
+  std::string diff_info = DIFF::diff_trees(index_tree_oid, cmt_tree_oid);
   std::cout<<diff_info<<std::endl;
 }
 

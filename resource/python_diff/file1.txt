@@ -1,4 +1,6 @@
-aaa
-ccc
-ddd
-eee
+blob
+def main():
+  print("This function is cool")
+  print("It prints stuff")
+  print("It can even return a number:")
+  return 7

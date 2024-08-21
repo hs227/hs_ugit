@@ -5,6 +5,7 @@
 
 #include "data.h"
 #include "base_other.h"
+#include"diff.h"
 
 namespace BASE
 {
@@ -74,15 +75,12 @@ namespace BASE
 
     for (const auto &entry : entries)
     {
-      if (entry.type == "blob")
-      {
+      if (entry.type == "blob"){
         gt_iter_node node;
         node.src = entry.oid;
         node.dst = base_path + entry.name;
         results.insert(node);
-      }
-      else if (entry.type == "tree")
-      {
+      }else if (entry.type == "tree"){
         std::set<gt_iter_node> res;
         std::string path = base_path + entry.name + "/";
         get_tree(res, entry.oid, path);
@@ -164,16 +162,11 @@ namespace BASE
     while (ss)
     {
       ss >> tag;
-      if (tag == "tree")
-      {
+      if (tag == "tree"){
         ss >> res.tree;
-      }
-      else if (tag == "parent")
-      {
+      }else if (tag == "parent"){
         ss >> res.parent;
-      }
-      else
-      {
+      }else{
         res.msg = tag;
         break;
       }
@@ -366,10 +359,58 @@ namespace BASE
     
     return content;
   }
-
-  void merge(const std::string& oid)
+  // for merge
+  // in: t_HEAD,t_other
+  // side: real merge
+  void read_tree_merged(const std::string &t_HEAD, const std::string &t_other)
   {
-    // TODO merge HEAD into oid
-    std::cout<<"merge plz"<<std::endl;
+    // clean
+    empty_current_directory();
+    DIFF::empty_diff_tmp();
+    // real merge
+    std::string diff_content=DIFF::merge_trees(t_HEAD,t_other);
+    std::cout << diff_content << std::endl;
+    
+    // read tree
+    std::stringstream ss(diff_content);
+    std::string line;
+    std::string file_path;
+    std::string file_content;
+    int file_size;
+    while(std::getline(ss,line)){
+      // file_size
+      file_size = std::stoi(line);
+      // file_path
+      std::getline(ss, line);
+      file_path = line.substr(line.find(' ') + 1);
+      // file_content
+      file_content.resize(file_size);
+      ss.read(file_content.data(),file_content.size());
+      //ss.seekg(file_size, std::ios::cur);
+      // '\n'
+      std::getline(ss, line);
+
+      // create file
+      file_path=DATA::CUR_DIR+"/"+file_path;
+      std::filesystem::create_directory(std::filesystem::path(file_path).parent_path());
+      std::ofstream out(file_path,std::ios::binary);
+      out.write(file_content.data(),file_content.size());
+      out.close();
+    }
+  
+    // clean
+    DIFF::empty_diff_tmp();
+  }
+  // merge HEAD_cmt with other_cmt, to fill the workshop
+  // in: other_oid
+  // side: fill workshop
+  void merge(const std::string& other_oid)
+  {
+    std::string head_oid=DATA::get_ref(DATA::HEAD_PATH).value;
+    commit_ctx head_ctx=get_commit(head_oid);
+    commit_ctx other_ctx=get_commit(other_oid);
+
+    read_tree_merged(head_ctx.tree,other_ctx.tree);
+    std::cout<<"Merged in working tree."<<std::endl;
   }
 }

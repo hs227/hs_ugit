@@ -1,0 +1,11 @@
+def main():
+#ifndef HEAD
+  print("1+1 = 2")
+#endif /* ! HEAD */
+  print("This function is cool")
+  print("It prints stuff")
+#ifdef HEAD
+  print("It can even return a number:")
+  return 7
+#endif /* HEAD */
+  

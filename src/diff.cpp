@@ -8,6 +8,7 @@
 
 
 namespace DIFF{
+  // iter each tree, and get all the diffs_content
   // in: t_from(tree_oid),t_to(tree_oid)
   // out: diff_content
   std::string diff_trees(const std::string &t_from, const std::string &t_to)
@@ -31,12 +32,14 @@ namespace DIFF{
         //std::cout<<diff_str<<std::endl;
         diff_content+=diff_str;
       }else{
-        //std::cout<<"not change: "<<nodes[i].filepath<<std::endl;
+        //std::cout<<"nochanged: "<<nodes[i].filepath<<std::endl;
+        diff_str=diff_trees_nochanged_c(nodes[i]);
+        diff_content+=diff_str;
       }
     }
     return diff_content;
   }
-  // a concise version of diff_trees
+  // actually, a concise version of diff_trees
   std::string iter_changed_file(const std::string &t_from, const std::string &t_to)
   {
     std::vector<std::string> tree_oids({t_from,t_to});
@@ -52,7 +55,7 @@ namespace DIFF{
     for(size_t i=0;i<nodes_size;++i){
       std::string diff_str;
       if (((diff_str = diff_trees_updated_c(nodes[i],false)) != "") ||
-          ((diff_str = diff_trees_new_c(nodes[i])) != "")     ||
+          ((diff_str = diff_trees_new_c(nodes[i],false)) != "")     ||
           ((diff_str = diff_trees_deleted_c(nodes[i])) != "")) {
         // updated or new or deleted
         //std::cout<<diff_str<<std::endl;
@@ -99,34 +102,108 @@ namespace DIFF{
     }
     return diffs;
   }
-
+  // call the diff
+  // in: t_from,t_to,output_path
+  // out: output_content
   std::string diff_blobs(const std::string &t_from, const std::string &t_to, std::string output_path)
   {
-    std::string file1_path = DATA::OBJECTS_DIR + "/" + t_from;
-    std::string file2_path = DATA::OBJECTS_DIR + "/" + t_to;
-    std::string pydiff_path = "../extra/py_diff.exe ";
-    std::string output_content;
-    // prepare environment
-    std::filesystem::create_directories(std::filesystem::path(output_path).parent_path());
-    pydiff_path = std::filesystem::absolute(std::filesystem::path(pydiff_path)).string();
-    file1_path=std::filesystem::absolute(std::filesystem::path(file1_path)).string();
-    file2_path=std::filesystem::absolute(std::filesystem::path(file2_path)).string();
-    output_path=std::filesystem::absolute(std::filesystem::path(output_path)).string();
-    // call the 'diff'
-    std::string diff_cmd = pydiff_path + " "+ file1_path + " " + file2_path + " -o " + output_path;
-    system(diff_cmd.c_str());
-    // read the output_content
-    std::ifstream in(output_path, std::ios::binary | std::ios::ate);
-    if (!in.is_open()){
-      std::cout << "diff_blobs:diff output create failed\n";
-      return "";
+    DIFF_TYPE type=DIFF_TYPE::diff_update;
+    if(t_from=="EMPTY"){
+      type=DIFF_TYPE::diff_new;
+    }else if (t_from=="NOCHANGED"){
+      type=DIFF_TYPE::nochanged;
     }
+    std::string r_filepath=call_diff(t_from,t_to,output_path,type);
+    std::string o_filepath=diff_output_content_post(r_filepath,true);
+    std::string output_content;
+
+    std::ifstream in(o_filepath,std::ios::binary|std::ios::ate);
     output_content.resize(in.tellg());
     in.seekg(0);
-    in.read(output_content.data(), output_content.size());
+    in.read(output_content.data(),output_content.size());
     in.close();
+
     return output_content;
   }
+  // iter each tree, and get all the merge_content
+  // in: t_HEAD(HEAD_tree_oid),t_other(other_tree_oid)
+  // out: tree_merge_content
+  std::string merge_trees(const std::string& t_HEAD,const std::string& t_other)
+  {
+    std::vector<std::string> tree_oids({t_HEAD,t_other});
+    std::vector<ct_node> nodes=compare_tree(tree_oids);
+
+    std::string merge_content;
+    
+    const size_t nodes_size=nodes.size();
+    for(size_t i=0;i<nodes_size;++i){
+      std::string diff_str;
+      if (((diff_str = merge_trees_updated_c(nodes[i])) != "") ||
+          ((diff_str = merge_trees_new_c(nodes[i])) != "")     ||
+          ((diff_str = merge_trees_deleted_c(nodes[i])) != "")) {
+        // updated or new or deleted
+        //std::cout<<diff_str<<std::endl;
+        merge_content+=diff_str;
+      }else{
+        // no changed
+        diff_str=merge_trees_nochanged_c(nodes[i]);
+        merge_content+=diff_str;
+      }
+    }
+    return merge_content;
+  }
+  // the same as 'diff_blobs', call the 'diff -D'
+  // in: t_from,t_to,output_path
+  // out: output_content
+  std::string merge_blobs(const std::string &t_from, const std::string &t_to, std::string output_path)
+  {
+    DIFF_TYPE type=DIFF_TYPE::merge_update;
+    if(t_from=="EMPTY"){
+      type=DIFF_TYPE::merge_new;
+    }else if (t_from=="NOCHANGED"){
+      type=DIFF_TYPE::nochanged;
+    }
+    std::string r_filepath=call_diff(t_from,t_to,output_path,type);
+    std::string o_filepath=diff_output_content_post(r_filepath,false);
+    std::string output_content;
+
+    std::ifstream in(o_filepath,std::ios::binary|std::ios::ate);
+    output_content.resize(in.tellg());
+    in.seekg(0);
+    in.read(output_content.data(),output_content.size());
+    in.close();
+
+    return output_content;
+  }
+  // clean the ".ugit/tmp/python_diff"
+  void empty_diff_tmp()
+  {
+    std::string tmp_dir_path=DATA::LAB_GIT_DIR+"/tmp/python_diff";
+    for(const auto& entry:std::filesystem::recursive_directory_iterator(tmp_dir_path)){
+      if(entry.is_regular_file()){
+        std::filesystem::remove(entry);
+      }
+    }
+  }  
+  // recur the 'tmp/python_diff' create all the 
+  void read_tree_merged()
+  {
+    const std::string tmp_path=DATA::LAB_GIT_DIR+"/tmp/python_diff";
+    for(const auto& entry:std::filesystem::recursive_directory_iterator(tmp_path)){
+      std::string filename=entry.path().filename().string();
+      // check
+      if(!entry.is_regular_file())
+        continue;
+      if(filename.substr(filename.length()-4)!="post")
+        continue;
+      // restore real name
+      
+      
+  
+    }
+  }
+
+
 }
 
 

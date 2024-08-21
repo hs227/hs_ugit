@@ -33,6 +33,10 @@ namespace DIFF{
   std::string iter_changed_file(const std::string& t_from,const std::string& t_to);
   std::vector<ct_node> compare_tree(const std::vector<std::string> tree_oids);
   std::string diff_blobs(const std::string &t_from, const std::string &t_to, std::string output_path = "../resource/python_diff/output.txt");
+  std::string merge_trees(const std::string& t_HEAD,const std::string& t_other);
+  std::string merge_blobs(const std::string &t_from, const std::string &t_to, std::string output_path);
+  void empty_diff_tmp();
+  void read_tree_merged();
 }
 
 #endif
