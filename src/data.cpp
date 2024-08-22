@@ -190,11 +190,16 @@ namespace DATA
   }
   // get all the refs` name and refs` oid
   // in: prefix(distinguish tag/branch),deref
-  // output: ref_name,ref_oid
+  // output: ref_names,ref_oids
   void iter_refs(std::vector<std::string> &ref_name, std::vector<RefValue> &ref_value, const std::string prefix, bool deref)
   {
     std::vector<std::string> refs;
-    refs.push_back(LAB_GIT_DIR + "/" + "HEAD");
+    // HEAD
+    refs.push_back(HEAD_PATH);
+    // MHEAD
+    if(std::filesystem::exists(MHEAD_PATH))
+      refs.push_back(MHEAD_PATH);
+    
 
     const std::string refs_dir=LAB_GIT_DIR+"/"+"refs/";
     iter_refs_recur(refs_dir,refs);

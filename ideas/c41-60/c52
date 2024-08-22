@@ -1,0 +1,7 @@
+data: Iter over MERGE_HEAD if it exists
+from:https://www.leshenko.net/p/ugit/#iterate-merge-head
+
+
+from:Nikita
+Since MERGE_HEAD may not exist (we might not be in the middle of a merge), add a check to iter_refs to avoid returning non-existing refs.
+
