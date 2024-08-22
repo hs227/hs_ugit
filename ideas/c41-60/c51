@@ -1,0 +1,10 @@
+merge: Record both parents on commit
+from: https://www.leshenko.net/p/ugit/#merge-record-both-parents
+
+
+from: Nikita
+Now we will make sure that a merge commit is created once we commit the merged working directory.
+'ugit merge' will store the branch we want to merge with in a new ref called MERGE_HEAD.
+
+
+

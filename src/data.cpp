@@ -215,7 +215,7 @@ namespace DATA
   void remove_ref(const std::string& ref,bool deref)
   {
     gri_res res=get_ref_internal(ref,deref);
-    std::filesystem::path ref_path=DATA::LAB_GIT_DIR+"/"+res.path;
+    std::filesystem::path ref_path=res.path;
     // remove it
     if(std::filesystem::exists(ref_path)){
       std::filesystem::remove(ref_path);

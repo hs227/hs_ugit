@@ -126,24 +126,27 @@ namespace BASE
   {
     std::string commit_data = "tree " + write_tree(DATA::CUR_DIR + "/") + "\n";
     std::string head_path = DATA::HEAD_PATH;
+    std::string mhead_path = DATA::MHEAD_PATH;
     DATA::RefValue head_value = DATA::get_ref(head_path, false);
 
     // parent commit
     std::string parent_oid = DATA::get_ref(head_path).value;
     if (parent_oid != "")
       commit_data += "parent " + parent_oid + "\n";
+    std::string mparent_oid=DATA::get_ref(mhead_path).value;
+    if(mparent_oid != ""){
+      commit_data += "parent "+mparent_oid+"\n";
+      DATA::remove_ref(mhead_path,false);
+    }
 
     commit_data += "\n";
     commit_data += msg + "\n";
     std::string commit_oid = DATA::hash_object(commit_data, "commit");
 
-    if (head_value.is_symbolic)
-    {
+    if (head_value.is_symbolic){
       std::string deref_path = head_value.value;
       DATA::update_ref(deref_path, DATA::RefValue(false, commit_oid));
-    }
-    else
-    {
+    }else{
       DATA::update_ref(head_path, DATA::RefValue(false, commit_oid));
     }
     return commit_oid;
@@ -411,8 +414,9 @@ namespace BASE
     std::string head_oid=DATA::get_ref(DATA::HEAD_PATH).value;
     commit_ctx head_ctx=get_commit(head_oid);
     commit_ctx other_ctx=get_commit(other_oid);
-
+    DATA::update_ref(DATA::MHEAD_PATH,DATA::RefValue(false,other_oid));
     read_tree_merged(head_ctx.tree,other_ctx.tree);
     std::cout<<"Merged in working tree."<<std::endl;
+    std::cout<<"And then Please 'commit'"<<std::endl;
   }
 }

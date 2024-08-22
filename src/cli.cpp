@@ -384,6 +384,17 @@ void status()
   }else{
     printf("HEAD detached at :%s\n",head_value.value.c_str());
   }
+  // print merge_head
+  std::string mhead_path=DATA::MHEAD_PATH;
+  DATA::RefValue mhead_value=DATA::get_ref(mhead_path,false);
+  if(mhead_value.is_symbolic){
+    std::string tmp=std::filesystem::path(mhead_value.value).filename().string();
+    printf("mHEAD exisited:%s-%s\n",mhead_value.value.c_str(),tmp.c_str());
+  }else{
+    printf("mHEAD not existed:%s\n",mhead_value.value.c_str());
+  }
+
+
 
   //  print changed files
   std::string head_oid=DATA::get_ref(head_path,true).value;

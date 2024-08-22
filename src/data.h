@@ -15,6 +15,8 @@ namespace DATA{
   const std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
   const std::string HEAD_PATH=LAB_GIT_DIR+"/HEAD";
   const std::string INDEX_PATH=LAB_GIT_DIR+"/index";
+  const std::string MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
+
 
   struct RefValue
   {
