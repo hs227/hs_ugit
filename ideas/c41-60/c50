@@ -1,0 +1,10 @@
+data: Delete refs
+from: https://www.leshenko.net/p/ugit/#delete-refs
+
+
+from:Nikita
+data.delete_ref():removes an existing ref
+
+
+
+
