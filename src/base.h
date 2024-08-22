@@ -12,10 +12,10 @@ namespace BASE
   struct commit_ctx
   {
     std::string tree;
-    std::string parent;
+    std::vector<std::string> parents;
     std::string msg;
     commit_ctx()
-        : tree(""), parent(""), msg("")
+        : tree(""), msg("")
     {}
   };
 

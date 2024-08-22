@@ -159,13 +159,15 @@ namespace BASE
       return commit_ctx();
     std::stringstream ss(commit_data);
     std::string tag;
+    std::string parent;
     while (ss)
     {
       ss >> tag;
       if (tag == "tree"){
         ss >> res.tree;
       }else if (tag == "parent"){
-        ss >> res.parent;
+        ss >> parent;
+        res.parents.push_back(parent);
       }else{
         res.msg = tag;
         break;
@@ -262,7 +264,7 @@ namespace BASE
       res.push_back(oid);
 
       commit_ctx ctx = get_commit(oid);
-      ref_oids.insert(ctx.parent);
+      ref_oids.insert(ctx.parents.begin(),ctx.parents.end());
     }
     return res;
   }

@@ -188,8 +188,9 @@ void print_commit(const std::string &cmt_oid, BASE::commit_ctx &ctx,
   std::cout << ")\n";
 
   std::cout << "tree " << ctx.tree << "\n";
-  if (ctx.parent != "")
-    std::cout << "parent " << ctx.parent << std::endl;
+  for(const auto& parent:ctx.parents){
+    std::cout<<"parent "<<parent<<std::endl;
+  }
   std::cout << " " << ctx.msg << "\n";
   std::cout << std::endl;
 }
@@ -318,10 +319,9 @@ void k()
     // oid -> Commit
     BASE::commit_ctx ctx = BASE::get_commit(cmt_oid);
     std::cout << cmt_oid;
-    if (ctx.parent != "")
-    {
-      std::cout << " " << ctx.parent << std::endl;
-      std::string text = "  \"" + cmt_oid.substr(0, 6) + "\" -> \"" + ctx.parent.substr(0, oid_len) + "\";\n";
+    for(const auto& parent:ctx.parents){
+      std::cout << " " << parent << std::endl;
+      std::string text = "  \"" + cmt_oid.substr(0, 6) + "\" -> \"" + parent.substr(0, oid_len) + "\";\n";
       DOT::add_text(&cmt_ctx, text);
     }
   }
@@ -415,12 +415,12 @@ void show(const std::string &args)
   std::vector<std::string> ref_names;
   std::vector<DATA::RefValue> ref_values;
   DATA::iter_refs(ref_names, ref_values);
-
+  // print commit
   BASE::commit_ctx ctx = BASE::get_commit(cmt_oid);
   print_commit(cmt_oid, ctx, ref_names, ref_values);
-
-  if(!ctx.parent.empty()){
-    BASE::commit_ctx parent_ctx=BASE::get_commit(ctx.parent);
+  // print parents` commits
+  for(const auto& parent:ctx.parents){
+    BASE::commit_ctx parent_ctx=BASE::get_commit(parent);
     std::string diff_info=DIFF::diff_trees(parent_ctx.tree,ctx.tree); 
     std::cout<<diff_info<<std::endl;   
   }
