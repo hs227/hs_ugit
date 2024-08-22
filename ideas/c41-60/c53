@@ -1,0 +1,6 @@
+merge-base: Compute common ancestor of a commit
+from:https://www.leshenko.net/p/ugit/#compute-common-ancestor
+
+from:Nikita
+'merge-base':receive two commit OIDs and find their common ancestor
+Its operation is pretty brute-force: It saves all parents of the first commit to a set and it iterates over the parents of the second commit in ancestry order until it reaches a parent that is a parent of the first commit.

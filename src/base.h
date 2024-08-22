@@ -62,6 +62,7 @@ namespace BASE
   void reset(const std::string&);
   std::string get_working_tree();
   void merge(const std::string& other_oid);
+  std::string get_merge_base(const std::string& c_oid1,const std::string& c_oid2);
 }
 
 #endif

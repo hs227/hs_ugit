@@ -29,6 +29,7 @@ void reset(const std::string &);
 void show(const std::string &);
 void diff(const std::string&);
 void merge(const std::string&);
+void merge_base(const std::string&,const std::string&);
 
 int main(int argc, char *argv[])
 {
@@ -140,18 +141,26 @@ int parse_args(int argc, char *argv[])
 
   // git diff
   CLI::App* sc_diff=app.add_subcommand("diff","diff the current tree with a commit_tree");
-  sc_diff->add_option("oid", input_file, "specify a oid rather than HEAD");
+  sc_diff->add_option("oid", input_file, "specify a oid rather than HEAD")->required();
   sc_diff->callback([&](){
     modifier_name(input_file);
     diff(input_file);});
 
   // git merge
   CLI::App* sc_merge=app.add_subcommand("merge","merge with other commit");
-  sc_merge->add_option("oid",input_file,"specify a oid rather than HEAD");
+  sc_merge->add_option("oid",input_file,"specify a oid rather than HEAD")->required();
   sc_merge->callback([&](){
     modifier_name(input_file);
     merge(input_file);});
 
+  // git merge-base
+  CLI::App* sc_merge_base=app.add_subcommand("merge-base","find common commit of two commits");
+  sc_merge_base->add_option("oid1",input_file,"first commit oid")->required();
+  sc_merge_base->add_option("oid2",output_file,"second commit oid")->required();
+  sc_merge_base->callback([&](){
+    modifier_name(input_file);
+    modifier_name(output_file);
+    merge_base(input_file,output_file);});
   CLI11_PARSE(app, argc, argv);
 
   return 0;
@@ -321,7 +330,7 @@ void k()
     std::cout << cmt_oid;
     for(const auto& parent:ctx.parents){
       std::cout << " " << parent << std::endl;
-      std::string text = "  \"" + cmt_oid.substr(0, 6) + "\" -> \"" + parent.substr(0, oid_len) + "\";\n";
+      std::string text = "  \"" + cmt_oid.substr(0, oid_len) + "\" -> \"" + parent.substr(0, oid_len) + "\";\n";
       DOT::add_text(&cmt_ctx, text);
     }
   }
@@ -463,6 +472,11 @@ void merge(const std::string& args)
   BASE::merge(oid);
 }
 
+void merge_base(const std::string& oid1,const std::string& oid2)
+{
+  std::string msg=BASE::get_merge_base(oid1,oid2);
+  std::cout<<msg<<std::endl;
+}
 
 
 

@@ -419,4 +419,24 @@ namespace BASE
     std::cout<<"Merged in working tree."<<std::endl;
     std::cout<<"And then Please 'commit'"<<std::endl;
   }
+  // in: commit_oid1,commit_oid2
+  // out:based_commit_oid
+  std::string get_merge_base(const std::string& c_oid1,const std::string& c_oid2)
+  {
+    std::vector<std::string> c1_parents=iter_commits_and_parents({c_oid1});
+    std::vector<std::string> c2_parents=iter_commits_and_parents({c_oid2});
+    for(const std::string& c2_parent:c2_parents){
+      bool flag=false;
+      for(const std::string& c1_parent:c1_parents){
+        if(c2_parent==c1_parent){
+          flag=true;
+          break;
+        }
+      }
+      if(flag){
+        return c2_parent;
+      }
+    }    
+    return "";
+  }
 }
