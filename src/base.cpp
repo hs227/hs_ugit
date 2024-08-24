@@ -365,17 +365,17 @@ namespace BASE
     return content;
   }
   // for merge
-  // in: t_HEAD,t_other
+  // in: t_base,t_HEAD,t_other
   // side: real merge
-  void read_tree_merged(const std::string &t_HEAD, const std::string &t_other)
+  void read_tree_merged(const std::string &t_base,const std::string &t_HEAD, const std::string &t_other)
   {
     // clean
     empty_current_directory();
     DIFF::empty_diff_tmp();
     // real merge
-    std::string diff_content=DIFF::merge_trees(t_HEAD,t_other);
+    std::string diff_content=DIFF::merge_trees(t_base,t_HEAD,t_other);
     std::cout << diff_content << std::endl;
-    
+
     // read tree
     std::stringstream ss(diff_content);
     std::string line;
@@ -412,10 +412,12 @@ namespace BASE
   void merge(const std::string& other_oid)
   {
     std::string head_oid=DATA::get_ref(DATA::HEAD_PATH).value;
+    std::string base_oid=get_merge_base(head_oid,other_oid);
     commit_ctx head_ctx=get_commit(head_oid);
     commit_ctx other_ctx=get_commit(other_oid);
+    commit_ctx base_ctx=get_commit(base_oid);
     DATA::update_ref(DATA::MHEAD_PATH,DATA::RefValue(false,other_oid));
-    read_tree_merged(head_ctx.tree,other_ctx.tree);
+    read_tree_merged(base_ctx.tree,head_ctx.tree,other_ctx.tree);
     std::cout<<"Merged in working tree."<<std::endl;
     std::cout<<"And then Please 'commit'"<<std::endl;
   }

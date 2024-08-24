@@ -462,8 +462,10 @@ void diff(const std::string & args)
   if(index_tree_oid=="")
     return;
   //diff
+  DIFF::empty_diff_tmp();
   std::string diff_info = DIFF::diff_trees(index_tree_oid, cmt_tree_oid);
   std::cout<<diff_info<<std::endl;
+  DIFF::empty_diff_tmp();
 }
 
 void merge(const std::string& args)

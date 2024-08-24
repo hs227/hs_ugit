@@ -6,13 +6,15 @@
 #include"data.h"
 
 #include<sstream>
+#include<iostream>
 
 enum class DIFF_TYPE:int{
   diff_update=0,
   diff_new,
   merge_update,
   merge_new,
-  nochanged
+  nochanged,
+  diff3_update,
 };
 
 // call the real diff executation
@@ -54,7 +56,29 @@ inline static std::string call_diff(const std::string &t_from, const std::string
     system(diff_cmd.c_str());
     return output_path;
 }
+// call the real diff3 executation
+// in: t_base,t_HEAD,t_MHEAD
+// out: output_path
+inline static std::string call_diff3(const std::string &t_base,const std::string &t_HEAD,const std::string& t_MHEAD, std::string output_path,DIFF_TYPE diff_type)
+{
+  std::string file1_path  = DATA::OBJECTS_DIR + "/" + t_HEAD;
+  std::string base_path   = DATA::OBJECTS_DIR + "/" + t_base;
+  std::string file2_path  = DATA::OBJECTS_DIR + "/" + t_MHEAD;
+  std::string pydiff_path = "../extra/py_diff3.exe ";
+  // prepare environment
+  std::filesystem::create_directories(std::filesystem::path(output_path).parent_path());
+  pydiff_path = std::filesystem::absolute(std::filesystem::path(pydiff_path)).string();
+  file1_path=std::filesystem::absolute(std::filesystem::path(file1_path)).string();
+  base_path=std::filesystem::absolute(std::filesystem::path(base_path)).string();
+  file2_path=std::filesystem::absolute(std::filesystem::path(file2_path)).string();
+  output_path=std::filesystem::absolute(std::filesystem::path(output_path)).string();
+  // call the 'py_diff3 --merge versionA base versionB -L HEAD BASE MHEAD'
+  std::string diff_cmd;
+  diff_cmd = pydiff_path + " --merge -L HEAD BASE MHEAD " + file1_path + " " + base_path+ " " + file2_path + " -o " + output_path;
 
+  system(diff_cmd.c_str());
+  return output_path;
+}
 
 // prepare to get tmp/output_filename 
 inline static std::string diff_output_name_pre(const std::string filename)
@@ -95,7 +119,7 @@ inline static std::string diff_output_content_post(const std::string filepath_,b
     bool flag=true;
     while(std::getline(ss,line)){
       if(flag){
-        if(line=="blob\r"||
+        if(line==" blob\r"||
           line=="-blob\r"||
           line=="+blob\r"){
             flag=false;
@@ -177,70 +201,133 @@ inline static std::string diff_trees_nochanged_c(const DIFF::ct_node &node,bool 
   return nochanged_msg;
 }
 
-// for merge_trees updated_file case
-inline static std::string merge_trees_updated_c(const DIFF::ct_node &node,bool verbose=true)
+/* for merge_trees all cases descriptions:
+  caseXXX|base|HEAD|MHEAD|
+         |   0|   0|    0| impossible case
+         |   0|   0|    1| newfile
+         |   0|   1|    0| newfile
+         |   0|   1|    1| diff2_update
+         |   1|   0|    0| delete
+         |   1|   0|    1| diff2_update
+         |   1|   1|    0| diff2_update
+         |   1|   1|    1| diff3_update
+*/
+
+#define MT_STUB_CASE(x) \
+  case 0b ## x:            \
+    res=merge_trees_case ## x(node);\
+    break
+inline static std::string merge_trees_case001(const DIFF::ct_node& node);
+inline static std::string merge_trees_case010(const DIFF::ct_node& node);
+inline static std::string merge_trees_case011(const DIFF::ct_node& node);
+inline static std::string merge_trees_case100(const DIFF::ct_node& node);
+inline static std::string merge_trees_case101(const DIFF::ct_node& node);
+inline static std::string merge_trees_case110(const DIFF::ct_node& node);
+inline static std::string merge_trees_case111(const DIFF::ct_node& node);
+
+// for merge_trees case 
+inline static std::string merge_trees_reception(const DIFF::ct_node& node)
 {
-  if(node.oid_idx.size()==2&&
-     node.oids[0]!=node.oids[1]){
-    std::string updated_msg;
-    updated_msg="updated: "+node.filepath+"\n";
-    if(verbose){
-      std::string merge_content=DIFF::merge_blobs(node.oids[0],node.oids[1],diff_output_name_pre(node.filepath));
-      std::string len=std::to_string(merge_content.length());
-      updated_msg=len+"\n"+updated_msg+merge_content;
-    }
-    updated_msg+="\n";
-    return updated_msg;
+  int status=0;
+  std::string res;
+  for(const auto& idx:node.oid_idx){
+    status|=1<<(2-idx);
   }
-  return "";
-}
-// for merge_trees new_file case 
-inline static std::string merge_trees_new_c(const DIFF::ct_node &node,bool verbose=true){
-  if(node.oid_idx.size()==1&&
-     node.oid_idx[0]==1){
-    std::string new_msg;
-    new_msg="new: "+node.filepath+"\n";
-    if(verbose){
-      std::string merge_content=DIFF::merge_blobs("EMPTY",node.oids[0],diff_output_name_pre(node.filepath));
-      std::string len=std::to_string(merge_content.length());
-      new_msg=len+"\n"+new_msg+merge_content;    
-    }
-    new_msg+="\n";
-    return new_msg;
+  switch (status){
+    MT_STUB_CASE(001);
+    MT_STUB_CASE(010);
+    MT_STUB_CASE(011);
+    MT_STUB_CASE(100);
+    MT_STUB_CASE(101);
+    MT_STUB_CASE(111);
+  default:
+    break;
   }
-  return "";
+  return res;
 }
-// for merge_trees deleted_file case
-inline static std::string merge_trees_deleted_c(const DIFF::ct_node &node)
+
+// |base|HEAD|MHEAD|
+// |   0|   0|    1| newfile
+inline static std::string merge_trees_case001(const DIFF::ct_node& node)
 {
-  if(node.oid_idx.size()==1&&
-     node.oid_idx[0]==0){
-    std::string deleted_msg;
-    deleted_msg="deleted: "+node.filepath+"\n";
-    std::string len=std::to_string(0);
-    deleted_msg=len+"\n"+deleted_msg;
-    deleted_msg+="\n";
-    return deleted_msg;
-  }
-  return "";
+  std::string msg;
+  std::string content;
+  msg="new: "+node.filepath+"\n";
+  content=DIFF::merge_blobs("","",node.oids[0],diff_output_name_pre(node.filepath),0b001);
+  msg=std::to_string(content.size())+"\n"+msg+content;
+  msg+="\n";
+  return msg;
 }
-// for merge_trees nochanged_file case 
-inline static std::string merge_trees_nochanged_c(const DIFF::ct_node &node,bool verbose=true)
+// |base|HEAD|MHEAD|
+// |   0|   1|    0| newfile
+inline static std::string merge_trees_case010(const DIFF::ct_node& node)
 {
-  std::string nochanged_msg;
-  nochanged_msg="nochanged: "+node.filepath+"\n";
-  if(verbose){
-    std::string merge_content=DIFF::merge_blobs("NOCHANGED",node.oids[0],diff_output_name_pre(node.filepath));
-    std::string len=std::to_string(merge_content.length());
-    nochanged_msg=len+"\n"+nochanged_msg+merge_content;    
-  }
-  nochanged_msg+="\n";
-  return nochanged_msg;
+  std::string msg;
+  std::string content;
+  msg="new: "+node.filepath+"\n";
+  content=DIFF::merge_blobs("",node.oids[0],"",diff_output_name_pre(node.filepath),0b010);
+  msg=std::to_string(content.size())+"\n"+msg+content;
+  msg+="\n";
+  return msg;
 }
-
-
-
-
+//|base|HEAD|MHEAD|
+//|   0|   1|    1| diff2_update
+inline static std::string merge_trees_case011(const DIFF::ct_node& node)
+{
+  std::string msg;
+  std::string content;
+  msg="update: "+node.filepath+"\n";
+  content=DIFF::merge_blobs("",node.oids[0],node.oids[1],diff_output_name_pre(node.filepath),0b011);
+  msg=std::to_string(content.size())+"\n"+msg+content;
+  msg+="\n";
+  return msg;
+}
+// |base|HEAD|MHEAD|
+// |   1|   0|    0| delete
+inline static std::string merge_trees_case100(const DIFF::ct_node& node)
+{
+  std::string msg;
+  msg="delete: "+node.filepath+"\n";
+  msg="0\n"+msg;
+  msg+="\n";
+  return msg;
+}
+// |base|HEAD|MHEAD|
+// |   1|   0|    1| diff2_update
+inline static std::string merge_trees_case101(const DIFF::ct_node& node)
+{
+  std::string msg;
+  std::string content;
+  msg+="update: "+node.filepath+"\n";
+  content=DIFF::merge_blobs(node.oids[0],"",node.oids[1],diff_output_name_pre(node.filepath),0b101);
+  msg=std::to_string(content.size())+"\n"+msg+content;
+  msg+="\n";
+  return msg;
+}
+// |base|HEAD|MHEAD|
+// |   1|   1|    0| diff2_update
+inline static std::string merge_trees_case110(const DIFF::ct_node& node)
+{
+  std::string msg;
+  std::string content;
+  msg+="update: "+node.filepath+"\n";
+  content=DIFF::merge_blobs(node.oids[0],node.oids[1],"",diff_output_name_pre(node.filepath),0b110);
+  msg=std::to_string(content.size())+"\n"+msg+content;
+  msg+="\n";
+  return msg;
+}
+// |base|HEAD|MHEAD|
+// |   1|   1|    1| diff3_update
+inline static std::string merge_trees_case111(const DIFF::ct_node& node)
+{
+  std::string msg;
+  std::string content;
+  msg+="update: "+node.filepath+"\n";
+  content=DIFF::merge_blobs(node.oids[0],node.oids[1],node.oids[2],diff_output_name_pre(node.filepath),0b111);
+  msg=std::to_string(content.size())+"\n"+msg+content;
+  msg+="\n";
+  return msg;
+}
 
 
 

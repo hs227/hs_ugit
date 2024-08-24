@@ -126,11 +126,11 @@ namespace DIFF{
     return output_content;
   }
   // iter each tree, and get all the merge_content
-  // in: t_HEAD(HEAD_tree_oid),t_other(other_tree_oid)
+  // in: t_base(base_tree_oid),t_HEAD(HEAD_tree_oid),t_other(other_tree_oid)
   // out: tree_merge_content
-  std::string merge_trees(const std::string& t_HEAD,const std::string& t_other)
+  std::string merge_trees(const std::string& t_base,const std::string& t_HEAD,const std::string& t_other)
   {
-    std::vector<std::string> tree_oids({t_HEAD,t_other});
+    std::vector<std::string> tree_oids({t_base,t_HEAD,t_other});
     std::vector<ct_node> nodes=compare_tree(tree_oids);
 
     std::string merge_content;
@@ -138,32 +138,33 @@ namespace DIFF{
     const size_t nodes_size=nodes.size();
     for(size_t i=0;i<nodes_size;++i){
       std::string diff_str;
-      if (((diff_str = merge_trees_updated_c(nodes[i])) != "") ||
-          ((diff_str = merge_trees_new_c(nodes[i])) != "")     ||
-          ((diff_str = merge_trees_deleted_c(nodes[i])) != "")) {
-        // updated or new or deleted
-        //std::cout<<diff_str<<std::endl;
-        merge_content+=diff_str;
-      }else{
-        // no changed
-        diff_str=merge_trees_nochanged_c(nodes[i]);
-        merge_content+=diff_str;
-      }
+      diff_str=merge_trees_reception(nodes[i]);
+      merge_content+=diff_str;
     }
     return merge_content;
   }
-  // the same as 'diff_blobs', call the 'diff -D'
-  // in: t_from,t_to,output_path
+  // in: t_base,t_HEAD,t_MHEAD
   // out: output_content
-  std::string merge_blobs(const std::string &t_from, const std::string &t_to, std::string output_path)
+  std::string merge_blobs(const std::string &t_base, const std::string &t_HEAD,const std::string& t_MHEAD, std::string output_path,int flag)
   {
-    DIFF_TYPE type=DIFF_TYPE::merge_update;
-    if(t_from=="EMPTY"){
-      type=DIFF_TYPE::merge_new;
-    }else if (t_from=="NOCHANGED"){
-      type=DIFF_TYPE::nochanged;
+    std::string r_filepath;
+    switch(flag){
+      case 0b001:
+        r_filepath=call_diff("EMPTY",t_MHEAD,output_path,DIFF_TYPE::merge_new);break;
+      case 0b010:
+        r_filepath=call_diff("EMPTY",t_HEAD,output_path,DIFF_TYPE::merge_new);break;
+      case 0b011:
+        r_filepath=call_diff(t_HEAD,t_MHEAD,output_path,DIFF_TYPE::merge_update);break;
+      case 0b101:
+        r_filepath=call_diff(t_base,t_MHEAD,output_path,DIFF_TYPE::merge_update);break;
+      case 0b110:
+        r_filepath=call_diff(t_base,t_HEAD,output_path,DIFF_TYPE::merge_update);break;
+      case 0b111:
+        r_filepath=call_diff3(t_base,t_HEAD,t_MHEAD,output_path,DIFF_TYPE::diff3_update);break;
+      default:
+        return "";
     }
-    std::string r_filepath=call_diff(t_from,t_to,output_path,type);
+    
     std::string o_filepath=diff_output_content_post(r_filepath,false);
     std::string output_content;
 
@@ -185,23 +186,6 @@ namespace DIFF{
       }
     }
   }  
-  // recur the 'tmp/python_diff' create all the 
-  void read_tree_merged()
-  {
-    const std::string tmp_path=DATA::LAB_GIT_DIR+"/tmp/python_diff";
-    for(const auto& entry:std::filesystem::recursive_directory_iterator(tmp_path)){
-      std::string filename=entry.path().filename().string();
-      // check
-      if(!entry.is_regular_file())
-        continue;
-      if(filename.substr(filename.length()-4)!="post")
-        continue;
-      // restore real name
-      
-      
-  
-    }
-  }
 
 
 }

@@ -1,0 +1,3 @@
+def be_a_dog ():
+    print ("Bark!")
+    return False
