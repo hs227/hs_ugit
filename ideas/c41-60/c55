@@ -1,0 +1,14 @@
+merge: Fast-forward merge
+from:https://www.leshenko.net/p/ugit/#fast-forward-merge
+
+
+from: Nikita
+'Fast-forward merge':need to check if HEAD is an ancestor of the branch that we want to merge into. 
+If the common ancestor of HEAD and some-branch is HEAD itself it means that in particular HEAD is an ancestor of some-branch. 
+
+
+
+
+
+
+

@@ -416,6 +416,15 @@ namespace BASE
     commit_ctx head_ctx=get_commit(head_oid);
     commit_ctx other_ctx=get_commit(other_oid);
     commit_ctx base_ctx=get_commit(base_oid);
+    
+    // Fast-forward merge
+    if (base_oid==head_oid){
+      read_tree(other_ctx.tree);
+      DATA::update_ref(DATA::HEAD_PATH,DATA::RefValue(false,other_oid));
+      std::cout<<"Fast-forward merge, no need to commit"<<std::endl;
+      return;
+    } 
+
     DATA::update_ref(DATA::MHEAD_PATH,DATA::RefValue(false,other_oid));
     read_tree_merged(base_ctx.tree,head_ctx.tree,other_ctx.tree);
     std::cout<<"Merged in working tree."<<std::endl;
