@@ -14,6 +14,7 @@ namespace DATA
   // create the repository file
   // 1. '.ugit/'
   // 2. '.ugit/objects/'
+  // set the .ugit DIR
   void init()
   {
     // .ugit
@@ -42,6 +43,10 @@ namespace DATA
       if(!flag)
         std::cout<<".ugit/tmp create failed"<<std::endl;
     }
+
+
+    // set GIT_DIR
+    change_git_dir();
   }
 
 
@@ -227,6 +232,26 @@ namespace DATA
     }
   }
 
-
+  void change_git_dir(const std::string& new_path)
+  {
+    if(new_path==""){
+      //使用默认路径
+      CUR_DIR="../lab_space";// for this project 
+      GIT_DIR = ".ugit";
+      LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
+      OBJECTS_DIR=LAB_GIT_DIR+"/objects";
+      HEAD_PATH=LAB_GIT_DIR+"/HEAD";
+      INDEX_PATH=LAB_GIT_DIR+"/index";
+      MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
+    }else{
+      CUR_DIR=new_path;
+      GIT_DIR = ".ugit";
+      LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
+      OBJECTS_DIR=LAB_GIT_DIR+"/objects";
+      HEAD_PATH=LAB_GIT_DIR+"/HEAD";
+      INDEX_PATH=LAB_GIT_DIR+"/index";
+      MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
+    }
+  }
 
 }

@@ -9,13 +9,13 @@
   ((x) ? "True" : "False")
 
 namespace DATA{
-  const std::string CUR_DIR="../lab_space";// for this project 
-  const std::string GIT_DIR = ".ugit";
-  const std::string LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
-  const std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
-  const std::string HEAD_PATH=LAB_GIT_DIR+"/HEAD";
-  const std::string INDEX_PATH=LAB_GIT_DIR+"/index";
-  const std::string MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
+  std::string CUR_DIR="../lab_space";// for this project 
+  std::string GIT_DIR = ".ugit";
+  std::string LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
+  std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
+  std::string HEAD_PATH=LAB_GIT_DIR+"/HEAD";
+  std::string INDEX_PATH=LAB_GIT_DIR+"/index";
+  std::string MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
 
 
   struct RefValue
@@ -39,6 +39,7 @@ namespace DATA{
   std::string get_object(const std::string&,const std::string="blob");
   void iter_refs(std::vector<std::string> &ref_name, std::vector<RefValue> &ref_value, const std::string prefix="", bool deref = true);
   void remove_ref(const std::string& ref,bool deref=true);
+  void change_git_dir(const std::string& new_path="");
 }
 
 #endif

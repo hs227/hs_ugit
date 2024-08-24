@@ -1,0 +1,11 @@
+data: Allow git directory change
+from:https://www.leshenko.net/p/ugit/#change-git-directory
+
+
+from:Nikita
+prepare for 'fetch' and 'push'：allow to change the current GIT_DIR.
+
+
+from:leaving_knife
+We will not use like 'contentmanager' in python, such a stackable and revertible feature. We just change it less robustly.
+
