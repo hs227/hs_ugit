@@ -281,4 +281,13 @@ namespace DATA
     return true;
   }
 
+  void push_object(const std::string& oid,std::string remote_git_dir)
+  {
+    remote_git_dir+="/"+DATA::GIT_DIR;
+    std::string remote_obj_path=remote_git_dir+"/"+oid;
+    std::string local_obj_path=DATA::OBJECTS_DIR+"/"+oid;
+    std::filesystem::copy_file(local_obj_path,remote_obj_path);
+    
+  }
+
 }

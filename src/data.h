@@ -43,6 +43,7 @@ namespace DATA{
   void change_git_dir(const std::string& new_path="");
   bool object_exists(const std::string& oid);
   bool fetch_object_if_missing(const std::string& oid,std::string remote_git_dir);
+  void push_object(const std::string& oid,std::string remote_git_dir);
 }
 
 #endif

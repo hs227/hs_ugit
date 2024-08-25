@@ -32,6 +32,7 @@ void diff(const std::string&);
 void merge(const std::string&);
 void merge_base(const std::string&,const std::string&);
 void fetch(const std::string&);
+void push(const std::string&,const std::string&);
 
 int main(int argc, char *argv[])
 {
@@ -171,6 +172,13 @@ int parse_args(int argc, char *argv[])
     fetch(input_file);
   });
 
+  // git push
+  CLI::App* sc_push=app.add_subcommand("push","push things to remote repo");
+  sc_push->add_option("remote",input_file,"remote_path")->required();
+  sc_push->add_option("branch",output_file,"branch")->required();
+  sc_push->callback([&](){
+    push(input_file,output_file);
+  });
 
 
   CLI11_PARSE(app, argc, argv);
@@ -496,4 +504,12 @@ void fetch(const std::string& remote_path)
 {
   REMOTE::fetch(remote_path);
 }
+
+void push(const std::string& remote_path,const std::string& branch)
+{
+  REMOTE::push(remote_path,REMOTE::REMOTE_REFS_BASE+"/"+branch);
+}
+
+
+
 

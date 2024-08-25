@@ -1,0 +1,8 @@
+push: Naive implementation
+from: https://www.leshenko.net/p/ugit/#push-naive
+
+
+from: Nikita
+The opposite of fetch is push. Instead of downloading remote refs and objects, it uploads objects and synchronizes the local refs to the remote refs. 
+
+This implementation is inefficient, because each time it pushes all objects to the remote repository regardless of objects that exists there.

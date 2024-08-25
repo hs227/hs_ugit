@@ -48,7 +48,24 @@ namespace REMOTE{
 
   }
 
-  
+  void push(const std::string& remote_path,const std::string& refname)
+  {
+    // Get refs data
+    std::string local_ref=DATA::get_ref(refname).value;
+    std::vector<std::string> objects_to_push=BASE::iter_objects_in_commits({local_ref});
+
+    // Push all objects
+    for(const std::string& oid:objects_to_push){
+      DATA::push_object(oid,remote_path);
+    }
+    // Update server ref to our value
+    DATA::change_git_dir(remote_path);
+    std::string refname_path=DATA::LAB_GIT_DIR+"/"+refname;
+    DATA::update_ref(refname_path,DATA::RefValue(false,local_ref));
+
+
+
+  }
 
 
 
