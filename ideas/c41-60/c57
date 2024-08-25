@@ -1,0 +1,23 @@
+fetch: Print remote refs
+from: https://www.leshenko.net/p/ugit/#print-remote-refs
+
+
+from:Nikita
+{
+'fetch': download refs and associated objects from a remote reposity.
+Note that the remote master ref is namespaced under "remote/" to distinguish it from my master.
+Next, if I want to synchronize my master I can do ugit merge remote/master (Assuming that HEAD points to master).
+}
+{
+  Aim:List all refs on the remote reposity
+  s1:change GIT_DIR
+  s2:use the 'iter_refs("refs/heads")' to iter all branches
+}
+{
+  'remote.py' mode for remote synchronization code.
+  Here we will only code for local computer.
+  filesystem-based remotes will illustrate the important concepts just as well.
+}
+
+from:leaving-knife
+I will try to add the SSH or HTTP support like real GIT in the furture.

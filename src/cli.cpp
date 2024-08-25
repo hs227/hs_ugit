@@ -5,6 +5,7 @@
 #include "base.h"
 #include "dotter.h"
 #include "diff.h"
+#include "remote.h"
 
 int parse_args(int argc, char *argv[]);
 // argument modify
@@ -30,6 +31,7 @@ void show(const std::string &);
 void diff(const std::string&);
 void merge(const std::string&);
 void merge_base(const std::string&,const std::string&);
+void fetch(const std::string&);
 
 int main(int argc, char *argv[])
 {
@@ -161,6 +163,16 @@ int parse_args(int argc, char *argv[])
     modifier_name(input_file);
     modifier_name(output_file);
     merge_base(input_file,output_file);});
+  
+  // git fetch
+  CLI::App* sc_fetch=app.add_subcommand("fetch","fetch things from remote repo");
+  sc_fetch->add_option("remote",input_file,"remote_path")->required();  
+  sc_fetch->callback([&](){
+    fetch(input_file);
+  });
+
+
+
   CLI11_PARSE(app, argc, argv);
 
   return 0;
@@ -480,5 +492,8 @@ void merge_base(const std::string& oid1,const std::string& oid2)
   std::cout<<msg<<std::endl;
 }
 
-
+void fetch(const std::string& remote_path)
+{
+  REMOTE::fetch(remote_path);
+}
 

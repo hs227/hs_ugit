@@ -11,6 +11,16 @@
 
 namespace DATA
 {
+  std::string CUR_DIR="../lab_space";// for this project 
+  std::string GIT_DIR = ".ugit";
+  std::string LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
+  std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
+  std::string HEAD_PATH=LAB_GIT_DIR+"/HEAD";
+  std::string INDEX_PATH=LAB_GIT_DIR+"/index";
+  std::string MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
+
+
+
   // create the repository file
   // 1. '.ugit/'
   // 2. '.ugit/objects/'
@@ -244,7 +254,7 @@ namespace DATA
       INDEX_PATH=LAB_GIT_DIR+"/index";
       MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
     }else{
-      CUR_DIR=new_path;
+      CUR_DIR=new_path[new_path.size()-1]=='/'?new_path.substr(0,new_path.size()-1):new_path;
       GIT_DIR = ".ugit";
       LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
       OBJECTS_DIR=LAB_GIT_DIR+"/objects";

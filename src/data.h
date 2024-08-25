@@ -9,13 +9,13 @@
   ((x) ? "True" : "False")
 
 namespace DATA{
-  std::string CUR_DIR="../lab_space";// for this project 
-  std::string GIT_DIR = ".ugit";
-  std::string LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
-  std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
-  std::string HEAD_PATH=LAB_GIT_DIR+"/HEAD";
-  std::string INDEX_PATH=LAB_GIT_DIR+"/index";
-  std::string MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
+  extern std::string CUR_DIR;// for this project 
+  extern std::string GIT_DIR;
+  extern std::string LAB_GIT_DIR;
+  extern std::string OBJECTS_DIR;
+  extern std::string HEAD_PATH;
+  extern std::string INDEX_PATH;
+  extern std::string MHEAD_PATH;
 
 
   struct RefValue
