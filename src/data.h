@@ -9,6 +9,7 @@
   ((x) ? "True" : "False")
 
 namespace DATA{
+  extern const std::string DEFAULT_CUR_DIR;
   extern std::string CUR_DIR;// for this project 
   extern std::string GIT_DIR;
   extern std::string LAB_GIT_DIR;

@@ -1,0 +1,10 @@
+fetch: Download remote ref values
+from: https://www.leshenko.net/p/ugit/#fetch-remove-ref-values
+
+
+from:Nikita
+Just note that the remote commit is still missing from my object store, so refs/remote/master points to a non-existing object and any attempts to use it will cause an error.
+We're going to fix the error in the next change.
+
+Note that real Git supports multiple remotes, and each remote has a name. For example, if there is a remote named "origin", its branches would go under refs/remote/origin/. But in ugit we assume for simplicity that there's only one remote and just put its branches under refs/remote/.
+

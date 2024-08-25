@@ -1,5 +1,5 @@
-#ifndef DATA_OTHER_HPP
-#define DATA_OTHER_HPP
+#ifndef DATA_OTHER_H
+#define DATA_OTHER_H
 
 #include<iostream>
 #include<filesystem>

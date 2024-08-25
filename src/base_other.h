@@ -1,5 +1,5 @@
-#ifndef BASE_OTHER_HPP
-#define BASE_OTHER_HPP
+#ifndef BASE_OTHER_H
+#define BASE_OTHER_H
 
 #include <iostream>
 #include <filesystem>

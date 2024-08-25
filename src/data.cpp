@@ -11,7 +11,8 @@
 
 namespace DATA
 {
-  std::string CUR_DIR="../lab_space";// for this project 
+  const std::string DEFAULT_CUR_DIR="../lab_space";// for this project
+  std::string CUR_DIR= DEFAULT_CUR_DIR;
   std::string GIT_DIR = ".ugit";
   std::string LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
   std::string OBJECTS_DIR=LAB_GIT_DIR+"/objects";
@@ -246,7 +247,7 @@ namespace DATA
   {
     if(new_path==""){
       //使用默认路径
-      CUR_DIR="../lab_space";// for this project 
+      CUR_DIR=DEFAULT_CUR_DIR;// for this project 
       GIT_DIR = ".ugit";
       LAB_GIT_DIR=CUR_DIR+"/"+GIT_DIR;
       OBJECTS_DIR=LAB_GIT_DIR+"/objects";
