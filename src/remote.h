@@ -4,13 +4,10 @@
 #include<iostream>
 #include<string>
 
+
 namespace REMOTE{
 
   void fetch(const std::string& remote_path);
-
-
-
-
 
 
 
