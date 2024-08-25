@@ -1,0 +1,17 @@
+push: Send only missing objects
+from: https://www.leshenko.net/p/ugit/#push-only-missing
+
+
+from: Nikita
+let's add a simple check to determine which objects the remote has:
+  *Take all remote refs that exist on the remote. Since the remote might have refs that point to branches that we didn't pull yet, filter out all refs that point to unknown OIDs.
+  *Collect into a set all objects that are reachable from the known remote OIDs.
+  *Collect into a set all objects that are reachable from the local branch that is being pushed.
+  *Take the difference between the two sets. This effectively gives us the objects that are needed to fully describe the pushed branch but are missing from the remote.
+  *Push those missing objects.
+
+
+
+
+
+

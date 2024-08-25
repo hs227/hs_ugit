@@ -3,6 +3,7 @@
 #include<filesystem>
 #include"data.h"
 #include"base.h"
+#include"remote_other.h"
 
 namespace REMOTE{
   // using by remote to find remote_branches 
@@ -51,19 +52,24 @@ namespace REMOTE{
   void push(const std::string& remote_path,const std::string& refname)
   {
     // Get refs data
+    std::vector<std::string> remote_ref_name;
+    std::vector<DATA::RefValue> remote_ref_value;
+    get_remote_refs(remote_ref_name,remote_ref_value,remote_path,REMOTE_REFS_BASE);
     std::string local_ref=DATA::get_ref(refname).value;
-    std::vector<std::string> objects_to_push=BASE::iter_objects_in_commits({local_ref});
+    
+    // Compute which objects the server doesn't have
+    std::set<std::string> objects_to_push=
+      push_objects_filter(remote_ref_value,local_ref);    
 
-    // Push all objects
+    // Push missing objects
     for(const std::string& oid:objects_to_push){
       DATA::push_object(oid,remote_path);
     }
+
     // Update server ref to our value
     DATA::change_git_dir(remote_path);
     std::string refname_path=DATA::LAB_GIT_DIR+"/"+refname;
     DATA::update_ref(refname_path,DATA::RefValue(false,local_ref));
-
-
 
   }
 
