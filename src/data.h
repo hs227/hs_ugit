@@ -41,6 +41,8 @@ namespace DATA{
   void iter_refs(std::vector<std::string> &ref_name, std::vector<RefValue> &ref_value, const std::string prefix="", bool deref = true);
   void remove_ref(const std::string& ref,bool deref=true);
   void change_git_dir(const std::string& new_path="");
+  bool object_exists(const std::string& oid);
+  bool fetch_object_if_missing(const std::string& oid,std::string remote_git_dir);
 }
 
 #endif

@@ -2,7 +2,7 @@
 
 #include<filesystem>
 #include"data.h"
-#include"data.h"
+#include"base.h"
 
 namespace REMOTE{
   // using by remote to find remote_branches 
@@ -14,6 +14,7 @@ namespace REMOTE{
   {
     DATA::change_git_dir(remote_path);
     DATA::iter_refs(ref_name,ref_value,prefix);
+    DATA::change_git_dir("");
   }
 
   void fetch(const std::string& remote_path)
@@ -23,6 +24,18 @@ namespace REMOTE{
     std::vector<DATA::RefValue> ref_values;
     get_remote_refs(ref_names,ref_values,remote_path,REMOTE_REFS_BASE);
     
+    // Fetch missing objects by iterating and fetching on demand
+    std::vector<std::string> ref_oids;
+    for(const auto& ref_value:ref_values){
+      ref_oids.push_back(ref_value.value);
+    }
+    std::vector<std::string> missing_oids=BASE::iter_objects_in_commits(ref_oids);
+    for(const auto& missing_oid:missing_oids){
+      bool missing=DATA::fetch_object_if_missing(missing_oid,remote_path);
+      if(missing)
+        std::cout<<"missing: "<<missing_oid<<std::endl;
+    }
+
     const std::string local_ref_path=DATA::DEFAULT_CUR_DIR+"/"+DATA::GIT_DIR+"/";
     // Update local refs to match server
     for(size_t i=0;i<ref_names.size();++i){

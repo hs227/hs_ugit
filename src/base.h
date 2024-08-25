@@ -63,6 +63,7 @@ namespace BASE
   std::string get_working_tree();
   void merge(const std::string& other_oid);
   std::string get_merge_base(const std::string& c_oid1,const std::string& c_oid2);
+  std::vector<std::string> iter_objects_in_commits(const std::vector<std::string>&);
 }
 
 #endif

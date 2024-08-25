@@ -1,0 +1,18 @@
+fetch: Download missing objects pointed by remote refs
+from: https://www.leshenko.net/p/ugit/#fetch-remote-refs-objects
+
+
+from:Nikita
+{
+  Aim: Fetch the objects
+  In 'data.py':
+    'fetch_object_if_missing' to conditionally copy objects from remote repo by oid
+  In 'base.py':
+    'iter_objects_in_commits' list of the reachable objects
+    ?? before accessing, give the caller a chance to fetch it if missing
+  In 'remote.py':
+    in here, we just need to iterate all objects and fetch the missing
+}
+
+
+

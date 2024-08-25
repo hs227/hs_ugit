@@ -264,5 +264,21 @@ namespace DATA
       MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
     }
   }
+  bool object_exists(const std::string& oid)
+  {
+    std::string path=DATA::OBJECTS_DIR+"/"+oid;
+    return std::filesystem::exists(path); 
+  }
+
+  bool fetch_object_if_missing(const std::string& oid,std::string remote_git_dir)
+  {
+    if(object_exists(oid))
+      return false;
+    remote_git_dir+="/"+DATA::GIT_DIR+"/objects";
+    std::string remote_obj_path=remote_git_dir+"/"+oid;
+    std::string local_obj_path=DATA::OBJECTS_DIR+"/"+oid;
+    std::filesystem::copy_file(remote_obj_path,local_obj_path);
+    return true;
+  }
 
 }

@@ -450,4 +450,39 @@ namespace BASE
     }    
     return "";
   }
+
+  // from commits to get all objects(commit+tree+blob)
+  // input: oids(commit_oids)
+  // output: all_attachable_oids
+  std::vector<std::string> iter_objects_in_commits(const std::vector<std::string>& oids)
+  {
+    std::vector<std::string> all_objects_oids;
+    // 1.get all commit oids
+    // iter all attachable commits
+    std::vector<std::string> commit_oids=iter_commits_and_parents(oids);
+    std::vector<commit_ctx> commit_ctxs;
+    for(const std::string& commit_oid:commit_oids){
+      std::cout<<commit_oid<<std::endl;
+      all_objects_oids.push_back(commit_oid);
+      commit_ctx new_ctx=get_commit(commit_oid);
+      commit_ctxs.push_back(new_ctx);
+    }
+    // 2.get all tree oids
+    // iter each tree ,which got from commit, to iter all objects
+    std::set<std::string> all_blobs;
+    for(const auto& commit_ctx:commit_ctxs){
+      all_objects_oids.push_back(commit_ctx.tree);
+      std::set<gt_iter_node> each_blobs;
+      get_tree(each_blobs,commit_ctx.tree);
+      for(const gt_iter_node iter_node:each_blobs){
+        all_blobs.insert(iter_node.src);
+      }
+    }
+    // 3.get all blob oids
+    for(const std::string blob_oid:all_blobs){
+      all_objects_oids.push_back(blob_oid);
+    }
+    return all_objects_oids;
+  }
+
 }
