@@ -64,6 +64,8 @@ namespace BASE
   void merge(const std::string& other_oid);
   std::string get_merge_base(const std::string& c_oid1,const std::string& c_oid2);
   std::vector<std::string> iter_objects_in_commits(const std::vector<std::string>&);
+  bool is_ancestor_of(const std::string& commit_oid,const std::string& maybe_ancestor);
+  
 }
 
 #endif

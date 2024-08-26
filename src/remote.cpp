@@ -11,12 +11,6 @@ namespace REMOTE{
   // using by local to find local_remote
   const std::string LOCAL_REFS_BASE="refs/remote";
 
-  void get_remote_refs(std::vector<std::string> &ref_name, std::vector<DATA::RefValue> &ref_value,const std::string& remote_path,const std::string& prefix)
-  {
-    DATA::change_git_dir(remote_path);
-    DATA::iter_refs(ref_name,ref_value,prefix);
-    DATA::change_git_dir("");
-  }
 
   void fetch(const std::string& remote_path)
   {
@@ -37,8 +31,9 @@ namespace REMOTE{
         std::cout<<"missing: "<<missing_oid<<std::endl;
     }
 
-    const std::string local_ref_path=DATA::DEFAULT_CUR_DIR+"/"+DATA::GIT_DIR+"/";
+    
     // Update local refs to match server
+    const std::string local_ref_path=DATA::DEFAULT_CUR_DIR+"/"+DATA::GIT_DIR+"/";
     for(size_t i=0;i<ref_names.size();++i){
       std::cout<<"- "<<ref_names[i]<<std::endl;
       std::string ref_path=std::filesystem::path(ref_names[i]).filename().string();
@@ -51,15 +46,22 @@ namespace REMOTE{
 
   void push(const std::string& remote_path,const std::string& refname)
   {
-    // Get refs data
-    std::vector<std::string> remote_ref_name;
-    std::vector<DATA::RefValue> remote_ref_value;
-    get_remote_refs(remote_ref_name,remote_ref_value,remote_path,REMOTE_REFS_BASE);
-    std::string local_ref=DATA::get_ref(refname).value;
+    // Get local and remote refs data
+    std::string remote_ref=get_remote_ref(remote_path,refname);
+    std::string local_ref=DATA::get_ref(DATA::LAB_GIT_DIR+"/"+refname).value;
+
+    // check if this push is legal:
+    // 1. remote_ref not exist(push new branch)
+    // 2. remote_ref is the ancestor of the local_ref(update same branch)
+    if(remote_ref!=""&&BASE::is_ancestor_of(local_ref,remote_ref)==false){
+      std::cout<<"Need fetch first, and then could push"<<std::endl;
+      return;
+    }
+
     
     // Compute which objects the server doesn't have
     std::set<std::string> objects_to_push=
-      push_objects_filter(remote_ref_value,local_ref);    
+      push_objects_filter({remote_ref},local_ref);    
 
     // Push missing objects
     for(const std::string& oid:objects_to_push){

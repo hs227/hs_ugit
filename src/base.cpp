@@ -485,4 +485,14 @@ namespace BASE
     return all_objects_oids;
   }
 
+  bool is_ancestor_of(const std::string& commit_oid,const std::string& maybe_ancestor)
+  {
+    std::vector<std::string> ancestors=iter_commits_and_parents({commit_oid});
+    for(const auto& an:ancestors){
+      if(an==maybe_ancestor)
+        return true;
+    }
+    return false;
+  }
+  
 }
