@@ -495,4 +495,31 @@ namespace BASE
     return false;
   }
   
+  void add(const std::vector<std::string>& filenames)
+  {
+    // read old index
+    DATA::index_context index_ctx=DATA::get_index();
+
+    // update
+    for(const std::string& filename:filenames){
+      std::filesystem::path path=DATA::CUR_DIR+"/"+filename;
+      if(!std::filesystem::exists(path))
+        continue;
+      if(is_ignore(path.string()))
+        continue;
+      
+      if(std::filesystem::is_regular_file(path))
+        add_file_to_index(index_ctx.entries,filename,path.string());
+      else
+        add_dir_to_index(index_ctx.entries,filename);
+
+    }
+
+
+    // write new index
+    DATA::put_index(index_ctx);
+  }
+
+
+
 }

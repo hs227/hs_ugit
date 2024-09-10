@@ -7,10 +7,11 @@
 #include"base.h"
 #include"data_other.h"
 
-
+using json=nlohmann::json;
 
 namespace DATA
 {
+  // PATH
   const std::string DEFAULT_CUR_DIR="../lab_space";// for this project
   std::string CUR_DIR= DEFAULT_CUR_DIR;
   std::string GIT_DIR = ".ugit";
@@ -19,6 +20,31 @@ namespace DATA
   std::string HEAD_PATH=LAB_GIT_DIR+"/HEAD";
   std::string INDEX_PATH=LAB_GIT_DIR+"/index";
   std::string MHEAD_PATH=LAB_GIT_DIR+"/MHEAD";
+
+  // JSON
+  size_t JSON_WIDTH = 2;
+  void to_json(json& j,const index_metadata& m){
+    j=json{{"startTime",m.startTime}};
+  }
+  void from_json(const json& j,index_metadata& m){
+    j.at("startTime").get_to(m.startTime);
+  }
+  void to_json(json& j,const index_entry& e){
+    j=json{{"type",e.type},{"path",e.path},{"SHA1",e.SHA1},{"entries",e.entries}};
+  }
+  void from_json(const json& j,index_entry& e){
+    j.at("type").get_to(e.type);
+    j.at("path").get_to(e.path);
+    j.at("SHA1").get_to(e.SHA1);
+    j.at("entries").get_to(e.entries);
+  }
+  void to_json(json& j,const index_context& i){
+    j=json{{"metadata",i.metadata},{"entries",i.entries}};
+  }
+  void from_json(const json& j,index_context& i){
+    j.at("metadata").get_to(i.metadata);
+    j.at("entries").get_to(i.entries);
+  }
 
 
 
@@ -288,6 +314,47 @@ namespace DATA
     std::string local_obj_path=DATA::OBJECTS_DIR+"/"+oid;
     std::filesystem::copy_file(local_obj_path,remote_obj_path);
     
+  }
+
+  json get_index_boilerplate()
+  {
+    json index_boilerplate;
+    index_boilerplate["metadata"]["startTime"]="UNUSED";
+    index_boilerplate["entries"]=std::set<index_entry>{};
+    return index_boilerplate;
+  }
+
+  void init_index()
+  {
+    json index_boilerplate=get_index_boilerplate();
+    std::ofstream index_file(INDEX_PATH,std::ios::trunc);
+    index_file<<std::setw(2)<<index_boilerplate<<std::endl;
+    index_file.close();
+  }
+
+  index_context get_index()
+  {
+    json j;
+    index_context index_ctx;
+    // get json
+    if(std::filesystem::exists(INDEX_PATH)){
+      std::ifstream ifs(INDEX_PATH);
+      ifs>>j;
+      ifs.close();
+    }else{
+      j=get_index_boilerplate();
+    }
+    // get index_context
+    index_ctx=j.get<index_context>();
+    return index_ctx;
+  }
+
+  void put_index(const index_context& index_ctx)
+  {
+    json j=index_ctx;
+    std::ofstream ofs(INDEX_PATH,std::ios::trunc);
+    ofs<<std::setw(DATA::JSON_WIDTH)<<j<<std::endl;
+    ofs.close();
   }
 
 }

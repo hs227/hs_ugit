@@ -1,0 +1,23 @@
+{
+  "metadata":{
+    "startTime":"UNUSED"
+  },
+  "entries": [
+    {
+      "type": "blob",
+      "path": "file1",
+      "entries":[]
+    },
+    {
+      "type": "tree",
+      "path": "other",
+      "entries":[
+        {
+          "type": "blob",
+          "path": "file2",
+          "entries":[]
+        }
+      ]
+    }
+  ]
+}

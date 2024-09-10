@@ -4,11 +4,14 @@
 #include<iostream>
 #include<map>
 #include<vector>
+#include<set>
+#include"include/nlohmann/json.hpp"
 
 #define BOOL_STR(x) \
   ((x) ? "True" : "False")
 
 namespace DATA{
+  // PATH
   extern const std::string DEFAULT_CUR_DIR;
   extern std::string CUR_DIR;// for this project 
   extern std::string GIT_DIR;
@@ -18,7 +21,7 @@ namespace DATA{
   extern std::string INDEX_PATH;
   extern std::string MHEAD_PATH;
 
-
+  // RERVALUE
   struct RefValue
   {
     bool is_symbolic;
@@ -31,6 +34,25 @@ namespace DATA{
     {}
   };
 
+  // JSON
+  extern size_t JSON_WIDTH;
+  struct index_metadata{
+    std::string startTime;
+  };
+  struct index_entry{
+    std::string type;
+    std::string path;
+    std::string SHA1;
+    std::set<index_entry> entries;
+
+    bool operator<(const index_entry& rhs) const{
+      return this->path<rhs.path;
+    }
+  };
+  struct index_context{
+    index_metadata metadata;
+    std::set<index_entry> entries;
+  };
 
 
   void init();
@@ -44,6 +66,9 @@ namespace DATA{
   bool object_exists(const std::string& oid);
   bool fetch_object_if_missing(const std::string& oid,std::string remote_git_dir);
   void push_object(const std::string& oid,std::string remote_git_dir);
+  void init_index();
+  index_context get_index();
+  void put_index(const index_context& index_ctx);
 }
 
 #endif

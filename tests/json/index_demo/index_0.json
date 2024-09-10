@@ -1,0 +1,26 @@
+{
+  "metadata":{
+    "startTime":"time1"
+  },
+  "entries": [
+    {
+      "type": "blob",
+      "path": "file1",
+      "SHA1": "sha1",
+      "entries":[]
+    },
+    {
+      "type": "tree",
+      "path": "other",
+      "SHA1": "sha1",
+      "entries":[
+        {
+          "type": "blob",
+          "path": "file2",
+          "SHA1": "sha1",
+          "entries":[]
+        }
+      ]
+    }
+  ]
+}

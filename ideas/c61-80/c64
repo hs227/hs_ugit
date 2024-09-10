@@ -1,0 +1,14 @@
+add:Record added files in the index
+from: https://www.leshenko.net/p/ugit/#add-files-to-index
+
+
+from:Nikita
+the index:allow finer grained control over commited files.
+The flow will look like this:
+  *The user modifies some files in the working directory.
+  *For each file that the user wishes to commit, he will run ugit add path/to/file. ugit will put the file into the object database and remember its OID in the index. The index is a dictionary that maps filenames to their last remembered OID. The index will be saved as a JSON file in the .ugit directory so that we can persist it between invocations of ugit.
+  *The user runs ugit commit, at which point write-tree will take the contents of the index and write it to a tree object. Since the index maps file names to OIDs, just like a tree object, the conversion will be easy.
+
+from:leaving_knife
+index结构模板参考'tests/json/index_demo/index_0.json'。
+

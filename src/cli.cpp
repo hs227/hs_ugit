@@ -33,6 +33,7 @@ void merge(const std::string&);
 void merge_base(const std::string&,const std::string&);
 void fetch(const std::string&);
 void push(const std::string&,const std::string&);
+void add(const std::vector<std::string>&);
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +49,9 @@ int parse_args(int argc, char *argv[])
   // those std::strings` name are meaningless now
   std::string input_file;// actually argu1
   std::string output_file;// actually argu2
-  int option_parsed_count=0;
+  //int option_parsed_count=0;
+  std::vector<std::string> in_files_v;// for input a list of files
+
 
   // git init
   CLI::App *sc_init = app.add_subcommand("init", "ugit_cpp init");
@@ -180,6 +183,12 @@ int parse_args(int argc, char *argv[])
     push(input_file,output_file);
   });
 
+  // git add
+  CLI::App* sc_add=app.add_subcommand("add","add files to cache");
+  sc_add->add_option("files",in_files_v,"add a list of files")->required();
+  sc_add->callback([&](){
+    add(in_files_v);
+  });
 
   CLI11_PARSE(app, argc, argv);
 
@@ -510,6 +519,15 @@ void push(const std::string& remote_path,const std::string& branch)
   REMOTE::push(remote_path,REMOTE::REMOTE_REFS_BASE+"/"+branch);
 }
 
+void add(const std::vector<std::string>& files)
+{
+  if(files.empty()){
+    std::cout<<"You need to input some files"<<std::endl;
+    return;
+  }
+  
+  BASE::add(files);
 
+}
 
 
