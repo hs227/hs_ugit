@@ -18,6 +18,11 @@ namespace BASE
     std::string oid = write_tree_compact(directory);
     return oid;
   }
+  // for index tree write
+  std::string write_tree(){
+    std::string oid=write_tree_index();
+    return oid;
+  }
 
   // clean the dir`s files
   void empty_current_directory(const std::string &path = DATA::CUR_DIR)

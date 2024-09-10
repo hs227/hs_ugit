@@ -4,6 +4,7 @@
 #include <iostream>
 #include <filesystem>
 #include <set>
+#include<functional>
 
 #include "data.h"
 
@@ -62,6 +63,47 @@ static inline std::string write_tree_compact(const std::string &path)
   return res_oid;
 }
 
+static inline std::string write_tree_index_recur(std::set<DATA::index_entry>& index_entries,const std::string& path)
+{
+  std::set<BASE::wt_iter_node> wt_entries;
+
+  for(const auto& index_entry:index_entries){
+    BASE::wt_iter_node wt_entry;
+    wt_entry.name=index_entry.path;
+    wt_entry.type=index_entry.type;
+    if(index_entry.type=="blob"){
+      // file
+      wt_entry.oid=index_entry.SHA1;
+    }else{
+      // dir
+      wt_entry.oid=write_tree_index_recur(((DATA::index_entry&)index_entry).entries,path+index_entry.path+"/");
+      ((DATA::index_entry&)index_entry).SHA1=wt_entry.oid;
+    }
+    wt_entries.insert(wt_entry);
+  }
+
+  std::string tree_data;
+  for (const auto &entry : wt_entries)
+  {
+    tree_data += entry.type + " " + entry.oid + " " + entry.name + "\n";
+  }
+
+  std::string tree_oid = DATA::hash_object(tree_data, "tree");
+  return tree_oid;
+}
+
+
+static inline std::string write_tree_index()
+{
+  DATA::index_context index_ctx =DATA::get_index();
+  std::string tree_oid=write_tree_index_recur(index_ctx.entries,DATA::CUR_DIR+"/");
+  // update trees` oid
+  DATA::put_index(index_ctx);
+  return tree_oid;
+}
+
+
+
 static inline void add_dir_to_index_recur_add(std::set<DATA::index_entry>& index_entries,const std::string& dirname)
 {
   const std::string dirpath=DATA::CUR_DIR+"/"+dirname;
@@ -100,9 +142,13 @@ static inline void add_dir_to_index_climb_tree(std::set<DATA::index_entry>& inde
   }else{
     // direct dir
     std::string dirname=filepath;
-    DATA::index_entry next_entry{"tree",dirname,"U",{}};
-    add_dir_to_index_recur_add(next_entry.entries,whole_path);
-    index_entries.insert(next_entry);
+    if(dirname=="."){
+      add_dir_to_index_recur_add(index_entries,whole_path);      
+    }else{
+      DATA::index_entry next_entry{"tree",dirname,"U",{}};
+      add_dir_to_index_recur_add(next_entry.entries,whole_path);
+      index_entries.insert(next_entry);
+    }
   }
 }
 

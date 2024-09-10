@@ -1,0 +1,15 @@
+write-tree: Write from the index instead of the working directory
+
+from:Nikita
+ First, we need the convert the index, which is a flat list of files, to a tree of dictionaries.
+ Second,we will call write_tree_recursive() which is basically the same as the old write_tree(), but instead of operating on the filesystem it will work with the tree of dicts and write them to the objects store.
+
+
+from:leaving_knife
+I feel sorry about it, but our pattern of index already listed by tree.
+
+
+
+
+
+
