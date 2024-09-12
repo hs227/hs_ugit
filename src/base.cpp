@@ -9,18 +9,14 @@
 
 namespace BASE
 {
-  // in: dir_path
-  // out: tree_object_oid
-  std::string write_tree(std::string directory)
-  {
-    // 遍历目录
-    // compact version
-    std::string oid = write_tree_compact(directory);
-    return oid;
-  }
-  // for index tree write
-  std::string write_tree(){
-    std::string oid=write_tree_index();
+
+  std::string write_tree(const std::string& directory){
+    std::string oid;
+    if(directory==""){
+      oid=write_tree_index();
+    }else{
+      oid=write_tree_compact(directory);
+    }
     return oid;
   }
 
@@ -32,13 +28,10 @@ namespace BASE
       if (is_ignore((void *)&entry))
         continue;
 
-      if (entry.is_regular_file())
-      {
+      if (entry.is_regular_file()){
         // file
         std::filesystem::remove(entry.path());
-      }
-      else
-      {
+      }else{
         // dir
         empty_current_directory(entry.path().string());
         if (std::filesystem::is_empty(entry.path().string()))
@@ -48,7 +41,13 @@ namespace BASE
       }
     }
   }
-  // not deref,no recur
+  // clean the index fils
+  void empty_index(void){
+    if(std::filesystem::exists(DATA::INDEX_PATH)){
+      std::filesystem::remove(DATA::INDEX_PATH);
+    }
+  }
+  // not recursively
   // in: tree_oid
   // out:entries
   void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree_oid)
@@ -67,7 +66,7 @@ namespace BASE
     }
   }
 
-  // get all the blob in tree_object
+  // get all the blob in tree_object recursively
   // in:tree_oid,base_path(for recur)
   // out:results
   void get_tree(std::set<gt_iter_node> &results,
@@ -93,21 +92,44 @@ namespace BASE
       }
     }
   }
-  // fill the workshop by the files in tree
+  
+  // flush workshop by index  
+  void checkout_index(const DATA::index_context& index_ctx)
+  {
+    // clean
+    empty_current_directory();
+    // create files and dirs
+    checkout_index_recur(index_ctx.entries,DATA::CUR_DIR+"/");
+  }
+  
+  // the index part of read_tree
+  // in: tree_oid
+  // side: index flush
+  void read_tree_index(const std::string & tree_oid)
+  {
+    // clean index
+    empty_index();
+    DATA::index_context index_ctx=DATA::get_index();
+
+    get_tree_index(index_ctx.entries,tree_oid);  
+    // update index
+    DATA::put_index(index_ctx);
+  }
+
+  // the workshop part of read_tree
   // in: tree_oid
   // side: workshop flush
-  void read_tree(const std::string &tree_oid)
+  void read_tree_workshop(const std::string &tree_oid)
   {
     empty_current_directory();
 
     std::set<gt_iter_node> entries;
     get_tree(entries, tree_oid); // get all blob in tree
-    std::string cur_path = DATA::CUR_DIR;
     // iterate the tree and create each file
     for (const auto &entry : entries)
     {
       std::cout << entry.src << " -> " << entry.dst << std::endl;
-      std::filesystem::path path(cur_path + "/" + entry.dst);
+      std::filesystem::path path(DATA::CUR_DIR + "/" + entry.dst);
       std::filesystem::path dir = path.parent_path();
       std::filesystem::path file = path.filename();
       // dir create
@@ -124,12 +146,24 @@ namespace BASE
       out.close();
     }
   }
+
+  // in: tree_oid, is_update_workshop(flag to check if update workshop)
+  void read_tree(const std::string& tree_oid,const bool is_update_workshop)
+  {
+    read_tree_index(tree_oid);
+    if(is_update_workshop==true)
+      read_tree_workshop(tree_oid);
+  }
+  
+
+  
+
   // commit with msg
   // in:msg(comment)
   // out: commit_object_oid
   std::string commit(const std::string &msg)
   {
-    std::string commit_data = "tree " + write_tree(DATA::CUR_DIR + "/") + "\n";
+    std::string commit_data = "tree " + write_tree_index() + "\n";
     std::string head_path = DATA::HEAD_PATH;
     std::string mhead_path = DATA::MHEAD_PATH;
     DATA::RefValue head_value = DATA::get_ref(head_path, false);
@@ -192,7 +226,7 @@ namespace BASE
     if (cxt.tree == "")
       return;
     std::string &tree_oid = cxt.tree;
-    read_tree(tree_oid);
+    read_tree(tree_oid,true);
 
     // set HEAD
     std::string head_path = DATA::LAB_GIT_DIR + "/" + "HEAD";
@@ -285,7 +319,7 @@ namespace BASE
 
     DATA::update_ref(path, DATA::RefValue(false, oid));
   }
-
+  // check if branch
   bool is_branch(const std::string &branchname)
   {
     std::string path = DATA::LAB_GIT_DIR + "/" + "refs/heads/" + branchname;
@@ -305,7 +339,7 @@ namespace BASE
     }
     index_file.close();
   }
-
+  // iter all branches
   std::vector<std::string> iter_branch_names(void)
   {
     std::vector<std::string> branch_names;
@@ -322,7 +356,7 @@ namespace BASE
     if (cxt.tree == "")
       return;
     std::string &tree_oid = cxt.tree;
-    read_tree(tree_oid);
+    read_tree(tree_oid,true);
 
     // set HEAD
     std::string head_path = DATA::LAB_GIT_DIR + "/" + "HEAD";
@@ -370,9 +404,61 @@ namespace BASE
     return content;
   }
   // for merge
-  // in: t_base,t_HEAD,t_other
-  // side: real merge
-  void read_tree_merged(const std::string &t_base,const std::string &t_HEAD, const std::string &t_other)
+  // in: t_base,t_HEAD,t_other,is_updated_workshop
+  // side: real merge to flush index and workshop
+  void read_tree_merged(const std::string& t_base,const std::string& t_HEAD, const std::string& t_other,const bool is_updated_workshop=false)
+  {
+    // clean
+    if(is_updated_workshop)
+      empty_current_directory();
+    empty_index();
+    DIFF::empty_diff_tmp();
+
+    DATA::index_context index_ctx=DATA::get_index();
+    // real merge
+    std::string diff_content=DIFF::merge_trees(t_base,t_HEAD,t_other);
+    std::cout<< diff_content<<std::endl;
+
+    // read tree
+    std::stringstream ss(diff_content);
+    std::string line;
+    std::string file_path;
+    std::string file_content;
+    int file_size;
+    while(std::getline(ss,line)){
+      // file_size
+      file_size = std::stoi(line);
+      // file_path
+      std::getline(ss, line);
+      file_path = line.substr(line.find(' ') + 1);
+      // file_content
+      file_content.resize(file_size);
+      ss.read(file_content.data(),file_content.size());
+      //ss.seekg(file_size, std::ios::cur);
+      // '\n'
+      std::getline(ss, line);
+
+      // add to index
+      file_path=DATA::CUR_DIR+"/"+file_path;
+      read_tree_index_add_file(index_ctx.entries,file_path,file_path,file_content);
+
+      // add to workshop
+      if(is_updated_workshop){
+        std::filesystem::create_directory(std::filesystem::path(file_path).parent_path());
+        std::ofstream out(file_path,std::ios::binary);
+        out.write(file_content.data(),file_content.size());
+        out.close();    
+      }
+    }
+    // clean
+    DIFF::empty_diff_tmp();
+    // update index
+    DATA::put_index(index_ctx);
+
+  }
+
+  // workshop version of read_tree_merged
+  void read_tree_workshop_merged(const std::string &t_base,const std::string &t_HEAD, const std::string &t_other)
   {
     // clean
     empty_current_directory();
@@ -411,6 +497,47 @@ namespace BASE
     // clean
     DIFF::empty_diff_tmp();
   }
+  
+  // index version of read_tree_merged
+  void read_tree_index_merged(const std::string& t_base,const std::string& t_HEAD, const std::string& t_other)
+  {
+    // clean index
+    empty_index();
+    DIFF::empty_diff_tmp();
+    DATA::index_context index_ctx=DATA::get_index();
+    // real merge
+    std::string diff_content=DIFF::merge_trees(t_base,t_HEAD,t_other);
+    std::cout<< diff_content<<std::endl;
+
+    // read tree
+    std::stringstream ss(diff_content);
+    std::string line;
+    std::string file_path;
+    std::string file_content;
+    int file_size;
+    while(std::getline(ss,line)){
+      // file_size
+      file_size = std::stoi(line);
+      // file_path
+      std::getline(ss, line);
+      file_path = line.substr(line.find(' ') + 1);
+      // file_content
+      file_content.resize(file_size);
+      ss.read(file_content.data(),file_content.size());
+      //ss.seekg(file_size, std::ios::cur);
+      // '\n'
+      std::getline(ss, line);
+
+      // add to index
+      file_path=DATA::CUR_DIR+"/"+file_path;
+      read_tree_index_add_file(index_ctx.entries,file_path,file_path,file_content);
+    }
+    // clean
+    DIFF::empty_diff_tmp();
+    // update index
+    DATA::put_index(index_ctx);
+  }
+
   // merge HEAD_cmt with other_cmt, to fill the workshop
   // in: other_oid
   // side: fill workshop
@@ -424,7 +551,7 @@ namespace BASE
     
     // Fast-forward merge
     if (base_oid==head_oid){
-      read_tree(other_ctx.tree);
+      read_tree(other_ctx.tree,true);
       DATA::update_ref(DATA::HEAD_PATH,DATA::RefValue(false,other_oid));
       std::cout<<"Fast-forward merge, no need to commit"<<std::endl;
       return;

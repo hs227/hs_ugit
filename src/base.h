@@ -44,10 +44,10 @@ namespace BASE
     }
   };
 
-  std::string write_tree(std::string =".");
+  std::string write_tree(const std::string& directory="");
   void iter_tree_entries(std::set<wt_iter_node> &entries, const std::string &tree_oid);
   void get_tree(std::set<gt_iter_node> &results, const std::string &tree_oid, const std::string &base_path = "");
-  void read_tree(const std::string &);
+  void read_tree(const std::string& tree_oid,const bool is_update_workshop);
   std::string commit(const std::string&);
   commit_ctx get_commit(const std::string&);
   void checkout(const std::string&);

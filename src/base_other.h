@@ -161,6 +161,20 @@ static inline void add_dir_to_index(std::set<DATA::index_entry>& index_entries,c
   
 }
 
+static inline std::string read_file(const std::string& filepath)
+{
+  std::string content;
+  if(!std::filesystem::exists(filepath)||!std::filesystem::is_regular_file(filepath))
+    return "";
+
+  std::ifstream ifs(filepath,std::ios::ate|std::ios::binary);
+  content.resize(ifs.tellg());
+  ifs.seekg(0);
+  ifs.read(content.data(),content.size());
+  ifs.close();
+
+  return content;
+}
 
 // add a file to index_context
 // in: index_ctx,filepath
@@ -178,13 +192,85 @@ static inline void add_file_to_index(std::set<DATA::index_entry>& index_entries,
   }else{
     // file
     std::string filename=filepath;
-    std::string oid=DATA::hash_object(whole_path,"blob");
+    std::string content=read_file(whole_path);
+    std::string oid=DATA::hash_object(content,"blob");
     DATA::index_entry new_entry{"blob",filename,oid,{}};
     index_entries.insert(new_entry);
   }
 
   
 }
+
+static inline void get_tree_index(std::set<DATA::index_entry>& index_entries,const std::string& tree_oid)
+{
+  std::set<BASE::wt_iter_node> wt_entries;
+  iter_tree_entries(wt_entries,tree_oid);
+  for(const auto& wt_entry:wt_entries){
+    DATA::index_entry index_entry;
+    
+    index_entry.type=wt_entry.type;
+    index_entry.SHA1=wt_entry.oid;
+    index_entry.path=wt_entry.name;
+    if(wt_entry.type=="tree"){
+      // tree
+      get_tree_index(index_entry.entries,index_entry.SHA1);
+    }
+    index_entries.insert(index_entry);
+  }
+}
+
+
+static inline void read_tree_index_add_file(std::set<DATA::index_entry>& index_entries,const std::string& filepath,const std::string& whole_path,const std::string& content)
+{
+    size_t pos=filepath.find('/');
+  if(pos!=std::string::npos){
+    // dir
+    std::string dirname=filepath.substr(0,pos);
+    std::string next_filepath=filepath.substr(pos+1);
+    DATA::index_entry next_entry{"tree",dirname,"U",{}};
+    add_file_to_index(next_entry.entries,
+      next_filepath,whole_path);
+    index_entries.insert(next_entry);
+  }else{
+    // file
+    std::string filename=filepath;
+    std::string oid=DATA::hash_object(content,"blob");
+    DATA::index_entry new_entry{"blob",filename,oid,{}};
+    index_entries.insert(new_entry);
+  }
+
+}
+// for checkout_index
+// create files and dirs in workshop
+static inline void checkout_index_recur(const std::set<DATA::index_entry>& index_entries,const std::string& dirpath)
+{
+  for(const auto& index_entry:index_entries){
+    if(index_entry.type=="blob"){
+      // blob
+      std::string path=dirpath+index_entry.path;
+      std::string object_path=DATA::OBJECTS_DIR+"/"+index_entry.SHA1;
+      std::string content;
+      std::ifstream input(object_path,std::ios::binary|std::ios::ate);
+      content.resize(input.tellg());
+      input.seekg(0);
+      input.read(content.data(),content.size());
+      input.close();
+      std::ofstream output(path,std::ios::binary|std::ios::trunc);
+      output.write(content.data(),content.size());
+      output.close();
+
+    }else{
+      // tree
+      std::string path=dirpath+index_entry.path+"/";
+      std::filesystem::create_directory(path);
+      checkout_index_recur(index_entry.entries,path);
+    }
+
+  }
+}
+
+
+
 
 
 

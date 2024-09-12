@@ -262,7 +262,7 @@ void write_tree()
 void read_tree(const std::string &args)
 {
   std::string oid = args;
-  BASE::read_tree(oid);
+  BASE::read_tree(oid,true);
 }
 
 void commit(const std::string &args)
