@@ -652,6 +652,11 @@ namespace BASE
     DATA::put_index(index_ctx);
   }
 
-
+  std::string get_index_tree()
+  {
+    DATA::index_context index_ctx=DATA::get_index();
+    std::string index_tree_oid=write_tree();
+    return index_tree_oid;
+  }
 
 }

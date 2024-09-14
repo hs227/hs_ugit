@@ -200,7 +200,7 @@ static inline void add_file_to_index(std::set<DATA::index_entry>& index_entries,
 
   
 }
-
+// just build the index not list like tree
 static inline void get_tree_index(std::set<DATA::index_entry>& index_entries,const std::string& tree_oid)
 {
   std::set<BASE::wt_iter_node> wt_entries;

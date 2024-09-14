@@ -438,7 +438,7 @@ void status()
   std::string head_oid=DATA::get_ref(head_path,true).value;
   std::string head_tree_oid=BASE::get_commit(head_oid).tree;
   //    index tree
-  std::string index=BASE::get_working_tree();
+  std::string index=BASE::get_index_tree();
   std::string index_tree_oid=index.substr(0,40);
   if(index_tree_oid=="")
     return;

@@ -66,6 +66,7 @@ namespace BASE
   std::vector<std::string> iter_objects_in_commits(const std::vector<std::string>&);
   bool is_ancestor_of(const std::string& commit_oid,const std::string& maybe_ancestor);
   void add(const std::vector<std::string>& filenames);
+  std::string get_index_tree();
 }
 
 #endif
