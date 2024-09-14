@@ -1,0 +1,35 @@
+diff: Add --cached option and take index into account
+from: https://www.leshenko.net/p/ugit/#diff-use-index
+
+from: Nikita
+'diff':
+  *If no arguments are provided, diff from the index to the working directory. This way you can quickly see unstaged changes.
+  *If --cached was provided, diff from HEAD to the index. This way you can quickly see which changes are going to be commited.
+  *If a specific commit was provided, diff from the commit to the index or   working director (depending on whether --cached was provided).
+
+
+from: leaving_knife
+switch(argument){
+  case 1: /* no arguments : "ugit diff" */
+    index_tree;
+    workshop_tree;
+    diff(index_tree,workshop_tree);break;
+  case 2: /* --cached : "ugit diff --cached" */
+    HEAD_tree;
+    index_tree;
+    diff(HEAD_tree,index_tree);break;
+  case 3: /* argument and no '--cached' : "ugit diff oid" */
+    commit_tree;
+    workshop_tree;
+    diff(commit_tree,workshop_tree);break;
+  case 4: /* argument with '--cached' : "ugit diff --cached oid" */
+    commit_tree;
+    index_tree;
+    diff(commit_tree,index_tree);break;
+  default:
+    NOT_REACHED();
+}
+
+
+
+

@@ -13,7 +13,7 @@
 *额外使用的应用软件（或寻找代替品）：(记得环境变量)
   Graphviz:in'cli::k': dot 
   imageglass:in'cli::k': 图片查看器
-  
+*目前为止（c1-c69）完成了基于项目的内容，但后续还需处理bug并加入可能的新功能。
   
 
 
@@ -35,7 +35,8 @@ and this project should be used as a reference for the original project
 *Additional application (or looking for a replacement):(remeber env_varible)
   Graphviz:in'cli::k': dot 
   imageglass:in'cli::k': image viewer
-
+*So far (C1-C69) has been completed all content in based-project 'ugit', 
+  but there are still bugs to be dealt with and possible new features to be added in the future.
 
 
 

@@ -28,7 +28,7 @@ void branch(const std::string&,const std::string&);
 void status();
 void reset(const std::string &);
 void show(const std::string &);
-void diff(const std::string&);
+void diff(const std::string&,bool);
 void merge(const std::string&);
 void merge_base(const std::string&,const std::string&);
 void fetch(const std::string&);
@@ -51,7 +51,7 @@ int parse_args(int argc, char *argv[])
   std::string output_file;// actually argu2
   //int option_parsed_count=0;
   std::vector<std::string> in_files_v;// for input a list of files
-
+  bool flag1=false;
 
   // git init
   CLI::App *sc_init = app.add_subcommand("init", "ugit_cpp init");
@@ -147,10 +147,11 @@ int parse_args(int argc, char *argv[])
 
   // git diff
   CLI::App* sc_diff=app.add_subcommand("diff","diff the current tree with a commit_tree");
-  sc_diff->add_option("oid", input_file, "specify a oid rather than HEAD")->required();
+  sc_diff->add_option("oid", input_file, "specify a oid rather than HEAD");
+  sc_diff->add_flag("--cached",flag1,"if cached");
   sc_diff->callback([&](){
     modifier_name(input_file);
-    diff(input_file);});
+    diff(input_file,flag1);});
 
   // git merge
   CLI::App* sc_merge=app.add_subcommand("merge","merge with other commit");
@@ -476,23 +477,38 @@ void show(const std::string &args)
 
 }
 
-void diff(const std::string & args)
+void diff(const std::string & commit_oid,bool flag_cached)
 {
-  // cmt tree
-  std::string cmt_oid = args;
-  if (cmt_oid == "")
+  std::string from_tree_oid;
+  std::string to_tree_oid;
+
+  if(commit_oid==""&& flag_cached==false){
+    /* no arguments : "ugit diff" */
+    from_tree_oid=BASE::get_index_tree();
+    to_tree_oid=BASE::get_working_tree();
+  }else if(commit_oid==""&& flag_cached==true){
+    /* --cached : "ugit diff --cached" */
+    from_tree_oid=BASE::get_commit(DATA::get_ref(DATA::HEAD_PATH,true).value).tree;
+    to_tree_oid=BASE::get_index_tree();
+  }else if(commit_oid!=""&&flag_cached==false){
+    /* argument and no '--cached' : "ugit diff oid" */
+    from_tree_oid=BASE::get_commit(commit_oid).tree;
+    to_tree_oid=BASE::get_working_tree();
+  }else if(commit_oid!=""&&flag_cached==true){
+    /* argument with '--cached' : "ugit diff --cached oid" */
+        from_tree_oid=BASE::get_commit(commit_oid).tree;
+    to_tree_oid=BASE::get_index_tree();
+  }else{
+    // NOT REACHED();
     return;
-  std::string cmt_tree_oid=BASE::get_commit(cmt_oid).tree;
-  if(cmt_tree_oid=="")
+  }
+
+  if(from_tree_oid==""||to_tree_oid=="")
     return;
-  // index tree
-  std::string index=BASE::get_working_tree();
-  std::string index_tree_oid=index.substr(0,40);
-  if(index_tree_oid=="")
-    return;
+
   //diff
   DIFF::empty_diff_tmp();
-  std::string diff_info = DIFF::diff_trees(index_tree_oid, cmt_tree_oid);
+  std::string diff_info = DIFF::diff_trees(from_tree_oid,to_tree_oid);
   std::cout<<diff_info<<std::endl;
   DIFF::empty_diff_tmp();
 }
