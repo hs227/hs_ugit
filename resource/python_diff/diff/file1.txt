@@ -1,4 +1,3 @@
-blob
 def main():
   print("This function is cool")
   print("It prints stuff")

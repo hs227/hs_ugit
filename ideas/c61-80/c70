@@ -1,0 +1,27 @@
+implement the diff_and_merge:s1
+
+
+from:Nikita
+从本节开始，开始实现超出ugit的内容。
+本节实现diff和merge.
+参考文档：
+  1.https://www.cnblogs.com/MRRAOBX/articles/10043258.html
+  2.https://chenshinan.github.io/2019/05/02/git%E7%94%9F%E6%88%90diff%E5%8E%9F%E7%90%86%EF%BC%9AMyers%E5%B7%AE%E5%88%86%E7%AE%97%E6%B3%95/
+  3.https://blog.csdn.net/Bb15070047748/article/details/139680136
+
+
+DOC1:(others/diff_implement/s1)
+  diff关键在于寻找最长公共子序列，其余部分为增加或删除文本。
+  如何diff?
+    LCS(LongestCommonSubsequence)
+    SED(ShortestEditDistance)(某种意义上的LCS)
+  优化
+    预处理
+    Equality
+    Common Prefix/Suffix
+    Singular Insertion/Deletion
+    Two Edits
+  后处理
+    Semantics
+
+
