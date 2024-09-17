@@ -169,7 +169,7 @@ std::string line_get_LCS(const std::string& str1, const std::string& str2)
       }
       else {
         // dp[m][n]=max(dp[m-1][n],dp[m][n-1])
-        if (mat[m_][n_ - 1].first > mat[m_ - 1][n_].first) {
+        if (mat[m_][n_ - 1].first >= mat[m_ - 1][n_].first) {
           mat[m_][n_].first = mat[m_][n_ - 1].first;
           mat[m_][n_].second = LEFT;
         }
@@ -226,7 +226,7 @@ std::vector<std::string> lines_get_LCS(const vector<std::string>& lines1,const v
         mat[m_][n_].second=LEFT_UP;
       }else{
         // dp[m][n]=max(dp[m-1][n],dp[m][n-1])
-        if (mat[m_][n_ - 1].first > mat[m_ - 1][n_].first) {
+        if (mat[m_][n_ - 1].first >= mat[m_ - 1][n_].first) {
           mat[m_][n_].first = mat[m_][n_ - 1].first;
           mat[m_][n_].second = LEFT;
         }
