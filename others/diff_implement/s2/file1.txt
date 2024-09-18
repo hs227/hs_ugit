@@ -1,5 +1,7 @@
-class Foo
-  def init(name)
-    @name = name
-  end
-end
+A
+B
+C
+A
+B
+B
+A

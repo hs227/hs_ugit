@@ -1,9 +1,6 @@
-class Foo
-  def init(name)
-    @name = name
-  end
-
-  def inspect
-    @name
-  end
-end
+C
+B
+A
+B
+A
+C

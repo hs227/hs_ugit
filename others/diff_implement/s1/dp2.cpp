@@ -27,19 +27,22 @@ std::string get_SED(const std::string& str1, const std::string& str2)
 
   for (size_t m_ = 1; m_ < M; ++m_) {
     for (size_t n_ = 1; n_ < N; ++n_) {
-      if(mat[m_-1][n_-1]<mat[m_][n_-1]&&mat[m_-1][n_-1]<mat[m_-1][n_]){
-        if(strm[m_]==strn[n_]){
-          mat[m_][n_].first=mat[m_-1][n_-1].first;
-        }else{
-          mat[m_][n_].first=mat[m_-1][n_-1].first+2;
-        }
+      if(strm[m_]==strn[n_]){
+        // dp[m_][n_]=dp[m_-1][n_-1]
+        mat[m_][n_].first=mat[m_-1][n_-1].first;
         mat[m_][n_].second=LEFT_UP;
-      }else if(mat[m_][n_-1]<mat[m_-1][n_-1]&&mat[m_][n_-1]<mat[m_-1][n_]){
-        mat[m_][n_].first=mat[m_][n_-1].first+1;
-        mat[m_][n_].second=LEFT;
       }else{
-        mat[m_][n_].first=mat[m_-1][n_].first+1;
-        mat[m_][n_].second=UP;
+        // dp[m_][n_]=min{dp[m_-1][n_-1],dp[m_][n_-1],dp[m_-1][n_]}+{2or1or1}
+        if(mat[m_-1][n_-1]<mat[m_][n_-1]&&mat[m_-1][n_-1]<mat[m_-1][n_]){
+          mat[m_][n_].first=mat[m_-1][n_-1].first+2;
+          mat[m_][n_].second=LEFT_UP;
+        }else if(mat[m_][n_-1]<mat[m_-1][n_-1]&&mat[m_][n_-1]<mat[m_-1][n_]){
+          mat[m_][n_].first=mat[m_][n_-1].first+1;
+          mat[m_][n_].second=LEFT;
+        }else{
+          mat[m_][n_].first=mat[m_-1][n_].first+1;
+          mat[m_][n_].second=UP;
+        }
       }
     }
   }

@@ -1,4 +1,5 @@
 // Myers的动态规划法基于：（s1/pre_process）
+// 不标准的Myers
 #include<iostream>
 #include<string>
 #include<vector>

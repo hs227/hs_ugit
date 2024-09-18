@@ -1,0 +1,57 @@
+implement the diff_and_merge:s3
+
+
+from:Nikita
+从本节开始，开始实现超出ugit的内容。
+本节实现diff和merge.
+参考文档：
+  1.https://www.cnblogs.com/MRRAOBX/articles/10043258.html
+  2.https://chenshinan.github.io/2019/05/02/git%E7%94%9F%E6%88%90diff%E5%8E%9F%E7%90%86%EF%BC%9AMyers%E5%B7%AE%E5%88%86%E7%AE%97%E6%B3%95/
+  3.https://blog.csdn.net/Bb15070047748/article/details/139680136
+
+
+DOC1:(others/diff_implement/s1)
+  diff关键在于寻找最长公共子序列，其余部分为增加或删除文本。
+  如何diff?
+    LCS(LongestCommonSubsequence)
+    SED(ShortestEditDistance)(某种意义上的LCS)
+  优化
+    预处理
+    Equality
+    Common Prefix/Suffix
+    Singular Insertion/Deletion
+    Two Edits
+  后处理
+    Semantics
+
+DOC2:(others/diff_implement/s2)
+  Myers差分算法
+  增加DOC:
+    https://cjting.me/2017/05/13/how-git-generate-diff/ 
+    (该文档直观性远超DOC2)
+  虽然和文档有一定出入，但仍合格。
+
+DOC3:(others/diff_implement/s3)
+  三路合并算法
+  增加DOC:
+    https://marsishandsome.github.io/2019/07/Three_Way_Merge#two-way-merge
+  没在DOC中看出具体的实现原理，本项目先前已经在resource/python_diff/diff3中实现了.
+  ！增加DOC中指出，存在最近的公共祖先不是唯一的情况，该bug本项目中尚未处理。
+  
+  三路合并算法：
+	合并原则：能够直接合并的立刻合并，无法判断合并的交由用户自己合并。
+	merge_block：{
+		tag：修改块（黑块）和未修改块（白块）（块中是否存在修改内容）
+		basei1:base中的起始行数
+		basei2:base中的结束行数
+		content:块的实际内容
+	}
+	寻找两个version的共同祖先（若存在多个共同祖先则递归merge,生成唯一一个共同祖先base），并以base为基础进行三路合并，如果是forward_merge单独处理。
+	两个version分别和base进行diff，并生成对应的merge_block_list。所有的merge_block_list中两种不同类型的merge_block交替出现。两个版本的list以base的行数为基准进行合并。
+	主要存在三种情况：block1和block2的basei1始终相等
+	1.未修改块对应未修改块
+		两块的子集为两个版本均未修改的部分因此不冲突，两块的差集保留下来进入情况2。
+	2.修改块对应未修改块
+		如果修改块是未修改块的子集，那么该修改块仅在其中一个版本中进行了修改因此不冲突，两块的差集保留下来进入情况1。如果未修改块是修改块的子集，将未修改块和同list中next的修改块合并进入情况三。
+	3.修改块对应修改块
+		如果两者的basei2相同，则两者的冲突行数确定，由用户自行合并。如果basei2不同，则将小修改块和同列list中next的未修改块合并为修改块，并递归进入情况三。

@@ -16,6 +16,7 @@
   imageglass:in'cli::k': 图片查看器
 *目前为止完成了基于项目的内容，但后续还需处理bug并加入可能的新功能:
   c1-c69:based on 'ugit'
+  c70-c72:关于diff和merge的实现
   
 
 
@@ -41,7 +42,7 @@ and this project should be used as a reference for the original project
 *So far has been completed all content in based-project 'ugit', but there are still bugs to be dealt with 
   and possible new features to be added in the future:
   c1-c69:based on 'ugit'
-  
+  c70-c72:about the implement of diff and merge
 
 
 
